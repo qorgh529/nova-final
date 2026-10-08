@@ -28,16 +28,16 @@
 
 ## 스토리 흐름 (발표·데모 순서)
 
-1. **평상시 운영 (GCP)**: GitHub, Cloud Build(또는 GitHub Actions), Artifact Registry를 거쳐 GKE(Standard)로 배포. DB는 Cloud SQL, 첨부파일은 GCS
+1. **평상시 운영 (GCP)**: GitHub, Cloud Build(PR 테스트는 클라우드 자격증명 없는 GitHub Actions), Artifact Registry를 거쳐 GKE(Standard)로 배포. DB는 Cloud SQL, 첨부파일은 GCS
    - AWS로 **데이터만** 백업(DB 덤프, 첨부파일, IaC 코드). 실행 바이너리나 이미지는 오염될 수 있으므로 백업하지 않음
    - S3는 **Object Lock(Compliance 모드)과 별도 AWS 계정**으로 구성
    - 가능하면 **AWS가 GCP에서 백업을 가져오는(pull) 방식**을 써서 GCP 쪽에 AWS 키가 없도록 함
-2. **침해 발생**: 빌드 의존성이나 스크립트에 백도어가 들어간 이미지가 정상 파이프라인으로 배포됨. 백도어가 CI/CD 서비스 계정 키(조직 수준 권한)를 탈취하고, 숨은 서비스 계정이나 IAM 바인딩 같은 지속성 장치를 남김
+2. **침해 발생**: 빌드 의존성이나 스크립트에 백도어가 들어간 이미지가 정상 파이프라인으로 배포됨. 백도어가 빌드 중 Cloud Build 서비스 계정(조직 수준 권한)의 토큰을 탈취하고, 이 토큰으로 새 SA 키, 숨은 서비스 계정, IAM 바인딩 같은 지속성 장치를 남김
    - 데모용 백도어는 **외부 C2 서버로 신호를 보내는 모의 구현**으로 함. 실제 악성 기능은 넣지 않음
 3. **탐지**: 신종 백도어라 시그니처로는 잡히지 않으므로 **행위 기반 탐지**를 사용함. VPC Flow Logs 이상 통신, Cloud Audit Logs의 비정상 API 호출, Falco 런타임 탐지
 4. **격리 (GCP)**: 외부 통신 차단, 서비스 계정 키 폐기, 포렌식용 스냅샷 보존. GCP는 "신뢰 불가"로 선언하고 청소 대기
 5. **클린 DR 구축 (AWS)**: Terraform으로 VPC, EKS, RDS를 생성 (GKE와 같은 매니페스트 사용)
-   - **별도의 클린 빌드 파이프라인**을 사용함. 의존성 고정(lock), 마지막으로 검증된 커밋, SBOM, Trivy 스캔, cosign 서명
+   - **별도의 클린 빌드 파이프라인**(DR 계정의 AWS CodeBuild)을 사용함. 의존성 고정(lock), 마지막으로 검증된 커밋, SBOM, Trivy 스캔, cosign 서명
    - 침해 시작 **이전 시점**의 백업으로 복원. 복원 전에 첨부파일을 스캔하고 DB 권한 테이블을 점검
 6. **전환·검증**: DNS 전환(DNS 전용 AWS 계정의 Route 53, 관리자 승인 후 수동 전환), 데이터 무결성과 이상 통신 여부 확인, **RTO/RPO 측정**
 7. **사후 조치**: GCP 재구축 여부 결정, 재발 방지책(SBOM, 의존성 고정, 빌드 서명 의무화)
@@ -57,6 +57,9 @@
 - **컴퓨팅은 GKE Standard(GCP)와 EKS(AWS DR)**로 한다
   - Cloud Run은 Falco 런타임 탐지와 포렌식 스냅샷이 불가능해서 제외한다. Autopilot도 Falco 설치가 불확실해서 제외한다
   - EKS를 쓰면 GKE와 같은 매니페스트, Falco, 서명 검증을 그대로 쓸 수 있다 ("도구는 같고 신원 체계만 다르다")
+- **CI/CD**: 평시 빌드·배포는 **Cloud Build**, 사고 시 클린 빌드는 **AWS CodeBuild**(DR 계정), PR 테스트는 **GitHub Actions**로 한다
+  - GitHub에는 어떤 클라우드 자격증명도 두지 않는다. 클린 빌드는 고정된 커밋 SHA만 가져온다
+  - 평시 빌드가 GCP 침해 범위 안에 있어야 "클린 파이프라인이 AWS에 따로 필요하다"는 논리가 선다
 - **사내 서비스는 전자결재 + 휴가 신청**으로 한다 (상세: `docs/app/README.md`)
   - API는 **Spring Boot (Java 21, Gradle)**, 프론트엔드는 React + Vite. 컨테이너 2개(`web`, `api`)로 구성하고 MSA로 나누지 않음
   - 로그인은 앱 자체 로그인(JWT)으로 한다. Google 계정 SSO는 쓰지 않음
@@ -92,6 +95,7 @@
 - **UniSuper (2024.05)**: Google Cloud 측 설정 오류로 GCP 환경 전체가 삭제됨. 다른 클라우드에 있던 백업으로 복구 → 가장 강력한 근거
 - **Code Spaces (2014)**: AWS 콘솔이 탈취되어 백업까지 삭제된 뒤 폐업 → "같은 계정 안의 백업은 백업이 아니다"
 - **SolarWinds, 3CX**: 빌드·배포 파이프라인을 통한 공급망 공격
+- **tj-actions/changed-files (2025.03)**: 침해된 GitHub Action이 워크플로 시크릿을 로그로 노출 → "CI에 클라우드 키를 두면 안 된다"
 - 업계 개념: 사이버 복구 / 격리 복구 환경(IRE), Sheltered Harbor, NIST CSF Recover
 
 ## 남은 할 일

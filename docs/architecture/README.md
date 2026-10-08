@@ -63,8 +63,29 @@ AWS Organizations로 묶는다. 계정을 추가하는 비용은 없다. 관리(
 - EKS: 컨트롤 플레인 요금이 시간당 0.1달러다. DR 계정은 사고나 데모 때만 존재하므로 몇 시간 분량만 든다
 - 실제 금액은 확정 전에 요금 계산기로 확인한다
 
+## CI/CD: Cloud Build + CodeBuild, PR 테스트는 GitHub Actions (확정)
+
+| 용도 | 도구 | 가진 권한 |
+|---|---|---|
+| PR 테스트 (단위 테스트, 린트, SAST) | **GitHub Actions** | **클라우드 자격증명 없음** |
+| 평시 빌드와 GCP 배포 | **Cloud Build** (GitHub App 트리거) | GCP 서비스 계정만. 시나리오에서 **오염되는 쪽** |
+| 사고 시 클린 빌드 | **AWS CodeBuild** (DR 계정, Terraform으로 생성) | AWS KMS 신규 서명 키, ECR 푸시. GitHub는 읽기 전용 연결 |
+
+**평시 빌드를 Cloud Build로 하는 이유**
+- 빌드가 GCP **침해 범위 안**에 있다. GCP를 신뢰할 수 없게 되면 평시 파이프라인도 쓸 수 없으므로, AWS에 클린 파이프라인이 필요하다는 논리가 자연스럽다
+- 평시 파이프라인을 GitHub Actions로 하면 "그냥 GitHub Actions로 AWS에 빌드하면 되지 않나?"라는 질문이 생긴다. 게다가 클린 빌드도 같은 플랫폼(워크플로, 시크릿, 서드파티 Action)을 공유하게 되어 분리가 약해진다
+- 빌드 provenance와 Binary Authorization attestation을 바로 만들 수 있다. "탈취된 파이프라인이 서명했기 때문에 Binary Auth를 통과했다"를 시연하기 쉽다
+
+**GitHub에는 어떤 클라우드 자격증명도 두지 않는다**
+- GitHub는 소스만 제공한다. 클린 빌드는 승인 단계에서 확정한 **커밋 SHA를 고정**해서 가져오므로, 소스 신뢰를 커밋 단위로 보장한다
+- 근거 사례: 2025년 3월 `tj-actions/changed-files` 침해로 여러 저장소의 워크플로 시크릿이 로그로 노출됐다 (발표 전 원문 확인 필요)
+
+**공격 흐름 (Cloud Build 기준)**
+1. 빌드 중 오염된 의존성이 실행되고, 메타데이터 서버에서 Cloud Build 서비스 계정의 **토큰**을 얻는다 (서비스 계정 키 파일은 따로 없다)
+2. 이 토큰으로 **새 SA 키, 숨은 서비스 계정, IAM 바인딩**을 만들어 지속성을 확보한다. Audit Logs와 SCC가 이를 탐지한다
+3. 배포된 이미지는 런타임에 모의 C2로 신호를 보낸다. Falco와 VPC Flow Logs가 이를 탐지한다
+
 ## 미확정 (다이어그램에 "A / B"로 표기)
 
-- Cloud Build와 GitHub Actions 중 무엇을 쓸지
 - 백업 Pull 작업을 Lambda와 ECS Task 중 무엇으로 실행할지 (덤프 크기와 실행 시간 15분 제한을 고려)
 - 복구 오케스트레이터 구현 방식: Step Functions로 할지, AWS 러너에서 셸이나 Make 스크립트로 할지
