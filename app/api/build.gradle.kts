@@ -50,4 +50,11 @@ springBoot {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    // CI 로그에서 실패 원인(예외 메시지·cause)이 보이도록 한다. 기본값은 예외 클래스명만 출력한다.
+    testLogging {
+        events("failed", "skipped")
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showCauses = true
+        showStackTraces = true
+    }
 }

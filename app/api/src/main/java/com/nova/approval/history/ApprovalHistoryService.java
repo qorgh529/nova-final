@@ -36,8 +36,9 @@ public class ApprovalHistoryService {
 
     @Transactional
     public ApprovalHistory append(Long documentId, Long actorId, ApprovalAction action) {
-        // 전역 직렬화: 트랜잭션 범위 advisory lock
-        em.createNativeQuery("SELECT pg_advisory_xact_lock(4919)").getSingleResult();
+        // 전역 직렬화: 트랜잭션 범위 advisory lock.
+        // pg_advisory_xact_lock은 void를 반환해서 Hibernate가 결과를 못 읽으므로 text로 캐스팅한다.
+        em.createNativeQuery("SELECT CAST(pg_advisory_xact_lock(4919) AS text)").getSingleResult();
 
         ApprovalHistory prev = repo.findTopByOrderBySeqDesc().orElse(null);
         long seq = (prev == null) ? 1L : prev.getSeq() + 1L;

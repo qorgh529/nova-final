@@ -88,13 +88,15 @@ app/
 | GCS 스토리지 드라이버 | ❌ | |
 
 ### ⚠️ 통합 테스트 현재 상태 (가장 먼저 확인할 것)
-- `ApprovalE2EIntegrationTest`(결재 흐름, 잘못된 결재자 403, 첨부 업로드, 해시 체인 위변조 탐지)를 추가했다
-- 첫 CI 실행이 **실패**했다. 원인: MinIO Testcontainer에 고정한 이미지 태그(`RELEASE.2024-06-13T22-53-53Z`)가 Docker Hub에 없어 pull 404
-- 수정(`ac93de8`): MinIO 컨테이너를 없애고 **인메모리 `StorageService` 더블**(`TestStorageConfig`)로 대체. Postgres 컨테이너만 사용
-- **수정 후 CI 결과는 아직 확인하지 못했다.** 새 세션은 `ac93de8`의 CI를 가장 먼저 확인할 것
-  - 또 실패하면 `mcp__github__get_job_logs`(job_id 지정, `return_content=true`)로 원인을 본다. `gh run view --log`와 아티팩트 다운로드는 이 환경의 프록시에 막힌다
-  - 테스트는 **로컬에서 실행할 수 없다**(이 환경에는 Docker 데몬이 없음). 컴파일 확인(`./gradlew compileTestJava`)만 가능하고 실행은 CI에서 한다
-- 아직 한 번도 통과한 적 없는 코드이므로, 실패 시 테스트 코드와 앱 코드 양쪽을 의심할 것 (특히 `TestStorageConfig`가 `S3StorageService`와 충돌하는지, `nova.storage.driver=memory` 조건)
+- `ApprovalE2EIntegrationTest`(결재 흐름, 잘못된 결재자 403, 첨부 업로드, 해시 체인 위변조 탐지)가 있다. **아직 한 번도 통과하지 못했다**
+- 실패 이력 (CI 로그는 `mcp__github__get_job_logs`로 job_id를 지정해 `return_content=true`, `tail_lines`를 200 이상으로 본다)
+  1. `199ac1d`: MinIO Testcontainer 이미지 태그가 Docker Hub에 없어 pull 404 → MinIO를 없애고 인메모리 `StorageService` 더블(`TestStorageConfig`)로 대체
+  2. `ac93de8`: Postgres 컨테이너는 떴지만 **앱 컨텍스트 기동 중 Hibernate 스키마 검증(`ddl-auto=validate`) 실패**(`SchemaManagementException`). 통합 테스트가 처음으로 앱을 실제로 띄워서 잡아낸 버그다
+- 2번 수정(`V1__init.sql`의 `CHAR(64)` 4곳을 `VARCHAR(64)`로 변경, advisory lock 쿼리를 `CAST(... AS text)`로, 테스트 로깅 `exceptionFormat=FULL` 추가)은 푸시했지만 **그 CI 결과는 확인하지 못했다**
+  - 원인은 예외 클래스명만 보고 엔티티와 SQL을 대조해 추정한 것이다 (정확한 메시지는 못 봤다). 또 실패하면 이제 FULL 로깅으로 메시지가 보일 것이다
+  - V1 마이그레이션은 어디에도 배포된 적이 없어서 직접 수정했다. 배포된 뒤에는 V2로 고쳐야 한다
+- 테스트는 **로컬에서 실행할 수 없다**(이 환경에는 Docker 데몬이 없음). 컴파일 확인(`./gradlew compileTestJava`)만 가능하고 실행은 CI에서 한다
+- 통합 테스트가 통과하기 전까지 앱 컨텍스트 기동, 보안 설정, 결재 흐름은 실제로 검증된 적이 없다. 다음 실패 후보: `TestStorageConfig`와 스토리지 빈 충돌, JWT 인코더 설정, 첨부 업로드 multipart 처리
 
 ---
 
