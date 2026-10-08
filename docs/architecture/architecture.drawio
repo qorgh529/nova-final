@@ -1,245 +1,298 @@
 <mxfile host="app.diagrams.net">
-  <diagram id="arch" name="전체 아키텍처">
-    <mxGraphModel dx="1800" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1820" pageHeight="1120" math="0" shadow="0">
+  <diagram id="arch-v2" name="전체 아키텍처 v2">
+    <mxGraphModel dx="2000" dy="1300" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2020" pageHeight="1300" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-
-        <mxCell id="title" value="멀티클라우드 사이버 복구 아키텍처 — GCP 운영 / AWS 격리 백업 / AWS 클린 DR" style="text;html=1;fontSize=20;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="780" y="30" width="1000" height="40" as="geometry" />
+        <mxCell id="title" value="멀티클라우드 사이버 복구 아키텍처 v2 — GCP 운영 / 사고 대응 / AWS 격리 백업 · 클린 DR" style="text;html=1;fontSize=20;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="820" y="40" width="1160" height="40" as="geometry" />
         </mxCell>
-
-        <mxCell id="github" value="&lt;b&gt;GitHub 저장소&lt;/b&gt;&lt;br&gt;앱 소스 · IaC(Terraform) 코드" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F6F8FA;strokeColor=#24292F;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="40" y="20" width="250" height="60" as="geometry" />
+        <mxCell id="github" value="&lt;b&gt;① Developer / GitHub&lt;/b&gt;&lt;br&gt;앱 소스 · IaC · PR 리뷰 · 브랜치 보호" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#F6F8FA;strokeColor=#24292F;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="250" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="deps" value="&lt;b&gt;외부 의존성 / 빌드 스크립트&lt;/b&gt;&lt;br&gt;② 공급망 오염 지점 (모의 백도어)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDECEA;strokeColor=#D93025;fontColor=#A50E0E;fontSize=12;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="420" y="20" width="270" height="60" as="geometry" />
+        <mxCell id="deps" value="&lt;b&gt;외부 의존성 / 빌드 스크립트&lt;/b&gt;&lt;br&gt;② 공급망 오염 지점 (모의 백도어)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FDECEA;strokeColor=#D93025;fontColor=#A50E0E;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="60" width="270" height="60" as="geometry" />
         </mxCell>
-
-        <mxCell id="gcp" value="GCP 조직 · 주 운영 환경  ①" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EEF3FD;strokeColor=#4285F4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=6;fontSize=15;fontStyle=1;fontColor=#1A56C4;arcSize=2;" vertex="1" parent="1">
-          <mxGeometry x="40" y="120" width="680" height="790" as="geometry" />
+        <mxCell id="gcp" value="Google Cloud 조직 · 주 운영 환경" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=6;fontSize=15;fontStyle=1;arcSize=1;fillColor=#EEF3FD;strokeColor=#4285F4;fontColor=#1A56C4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="150" width="740" height="990" as="geometry" />
         </mxCell>
-
-        <mxCell id="g_ci" value="평시 CI/CD 파이프라인" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#8AB4F8;dashed=1;verticalAlign=top;align=left;spacingLeft=8;fontSize=11;fontColor=#1A56C4;arcSize=4;" vertex="1" parent="1">
-          <mxGeometry x="60" y="160" width="640" height="140" as="geometry" />
+        <mxCell id="g_ci" value="평시 CI/CD — 방어선을 모두 갖췄지만 백도어는 '정상 빌드'로 통과함" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;dashed=1;verticalAlign=top;align=left;spacingLeft=8;fontSize=11;arcSize=3;strokeColor=#8AB4F8;fontColor=#1A56C4;" vertex="1" parent="1">
+          <mxGeometry x="60" y="190" width="700" height="150" as="geometry" />
         </mxCell>
-        <mxCell id="cloudbuild" value="&lt;b&gt;Cloud Build&lt;/b&gt;&lt;br&gt;(또는 GitHub Actions)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4285F4;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="80" y="200" width="170" height="60" as="geometry" />
+        <mxCell id="cloudbuild" value="&lt;b&gt;Cloud Build / GitHub Actions&lt;/b&gt;&lt;br&gt;Test · Build · SAST · Image Scan" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#4285F4;" vertex="1" parent="1">
+          <mxGeometry x="75" y="225" width="215" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="ar" value="&lt;b&gt;Artifact Registry&lt;/b&gt;&lt;br&gt;컨테이너 이미지" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4285F4;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="300" y="200" width="160" height="60" as="geometry" />
+        <mxCell id="ar" value="&lt;b&gt;Artifact Registry&lt;/b&gt;&lt;br&gt;+ Binary Authorization&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;서명자 = 탈취된 파이프라인&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#4285F4;" vertex="1" parent="1">
+          <mxGeometry x="315" y="225" width="210" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="cisa" value="&lt;b&gt;CI/CD 서비스 계정&lt;/b&gt;&lt;br&gt;조직(Org) 수준 권한" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D93025;strokeWidth=2;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="510" y="200" width="170" height="60" as="geometry" />
+        <mxCell id="cisa" value="&lt;b&gt;CI/CD 서비스 계정&lt;/b&gt;&lt;br&gt;조직(Org) 수준 권한" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#D93025;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="550" y="225" width="195" height="70" as="geometry" />
         </mxCell>
-
-        <mxCell id="g_svc" value="사내 서비스 (전자결재 · 휴가 · 비품 신청)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#8AB4F8;dashed=1;verticalAlign=top;align=left;spacingLeft=8;fontSize=11;fontColor=#1A56C4;arcSize=4;" vertex="1" parent="1">
-          <mxGeometry x="60" y="330" width="640" height="220" as="geometry" />
+        <mxCell id="g_svc" value="사내 서비스 (전자결재 · 휴가 · 비품 신청)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;dashed=1;verticalAlign=top;align=left;spacingLeft=8;fontSize=11;arcSize=3;strokeColor=#8AB4F8;fontColor=#1A56C4;" vertex="1" parent="1">
+          <mxGeometry x="60" y="365" width="700" height="275" as="geometry" />
         </mxCell>
-        <mxCell id="app" value="&lt;b&gt;GKE / Cloud Run&lt;/b&gt;&lt;br&gt;웹 프론트 + API 서버" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4285F4;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="80" y="400" width="180" height="70" as="geometry" />
+        <mxCell id="lb" value="&lt;b&gt;HTTPS LB + Cloud Armor&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#4285F4;" vertex="1" parent="1">
+          <mxGeometry x="75" y="400" width="200" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="cloudsql" value="&lt;b&gt;Cloud SQL&lt;/b&gt;&lt;br&gt;PostgreSQL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4285F4;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="310" y="370" width="150" height="55" as="geometry" />
+        <mxCell id="app" value="&lt;b&gt;GKE / Cloud Run&lt;/b&gt;&lt;br&gt;웹 프론트 + API 서버" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#4285F4;" vertex="1" parent="1">
+          <mxGeometry x="75" y="490" width="200" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="gcs" value="&lt;b&gt;GCS&lt;/b&gt;&lt;br&gt;첨부파일" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4285F4;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="310" y="460" width="150" height="55" as="geometry" />
+        <mxCell id="cloudsql" value="&lt;b&gt;Cloud SQL&lt;/b&gt; PostgreSQL" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#4285F4;" vertex="1" parent="1">
+          <mxGeometry x="320" y="400" width="180" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="export" value="&lt;b&gt;백업 Export 버킷&lt;/b&gt; (GCS)&lt;br&gt;DB 덤프 · 첨부파일 사본&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;데이터만 · 이미지/바이너리 제외&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4285F4;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="510" y="405" width="175" height="75" as="geometry" />
+        <mxCell id="gcs" value="&lt;b&gt;GCS&lt;/b&gt; 첨부파일" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#4285F4;" vertex="1" parent="1">
+          <mxGeometry x="320" y="480" width="180" height="50" as="geometry" />
         </mxCell>
-
-        <mxCell id="g_det" value="③ 행위 기반 탐지  ·  ④ 격리" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#8AB4F8;dashed=1;verticalAlign=top;align=left;spacingLeft=8;fontSize=11;fontColor=#1A56C4;arcSize=4;" vertex="1" parent="1">
-          <mxGeometry x="60" y="580" width="640" height="310" as="geometry" />
+        <mxCell id="secret" value="&lt;b&gt;Secret Manager / KMS&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;사고 시 전부 오염 간주 · 재사용 금지&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#4285F4;" vertex="1" parent="1">
+          <mxGeometry x="320" y="560" width="180" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="flow" value="&lt;b&gt;VPC Flow Logs&lt;/b&gt;&lt;br&gt;이상 외부 통신" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4285F4;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="80" y="615" width="180" height="55" as="geometry" />
+        <mxCell id="export" value="&lt;b&gt;백업 Export 버킷&lt;/b&gt; (GCS)&lt;br&gt;DB 덤프 · 첨부파일 사본 · 감사 로그 사본&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;데이터만 · 이미지/바이너리 제외&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#4285F4;" vertex="1" parent="1">
+          <mxGeometry x="540" y="440" width="205" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="audit" value="&lt;b&gt;Cloud Audit Logs&lt;/b&gt;&lt;br&gt;비정상 IAM / API 호출" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4285F4;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="290" y="615" width="180" height="55" as="geometry" />
+        <mxCell id="g_det" value="③ 행위 기반 탐지 (시그니처 없음)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;dashed=1;verticalAlign=top;align=left;spacingLeft=8;fontSize=11;arcSize=3;strokeColor=#8AB4F8;fontColor=#1A56C4;" vertex="1" parent="1">
+          <mxGeometry x="60" y="665" width="700" height="335" as="geometry" />
         </mxCell>
-        <mxCell id="falco" value="&lt;b&gt;Falco&lt;/b&gt;&lt;br&gt;컨테이너 런타임 탐지" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4285F4;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="500" y="615" width="180" height="55" as="geometry" />
+        <mxCell id="audit" value="&lt;b&gt;Cloud Audit Logs&lt;/b&gt;&lt;br&gt;비정상 IAM / API 호출" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#4285F4;" vertex="1" parent="1">
+          <mxGeometry x="75" y="700" width="160" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="alert" value="&lt;b&gt;탐지 규칙 → 알림&lt;/b&gt;&lt;br&gt;(시그니처가 아닌 행위 기반)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF7E0;strokeColor=#F9AB00;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="230" y="710" width="300" height="55" as="geometry" />
+        <mxCell id="flow" value="&lt;b&gt;VPC Flow Logs&lt;/b&gt;&lt;br&gt;이상 외부 통신" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#4285F4;" vertex="1" parent="1">
+          <mxGeometry x="245" y="700" width="160" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="isolate" value="&lt;b&gt;격리 런북&lt;/b&gt;: 외부 통신 차단 · 서비스 계정 키 폐기 · 포렌식 스냅샷 보존&lt;br&gt;→ GCP를 &lt;b&gt;'신뢰 불가'&lt;/b&gt;로 선언, 청소 대기  (⑦ 사후 재구축 여부 결정)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDECEA;strokeColor=#D93025;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="80" y="805" width="600" height="65" as="geometry" />
+        <mxCell id="falco" value="&lt;b&gt;Falco&lt;/b&gt;&lt;br&gt;런타임 이상 행위" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#4285F4;" vertex="1" parent="1">
+          <mxGeometry x="415" y="700" width="160" height="60" as="geometry" />
         </mxCell>
-
-        <mxCell id="c2" value="&lt;b&gt;외부 C2 서버 (모의)&lt;/b&gt;&lt;br&gt;실제 악성 기능 없음" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDECEA;strokeColor=#D93025;fontColor=#A50E0E;fontSize=12;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="950" width="200" height="60" as="geometry" />
+        <mxCell id="scc" value="&lt;b&gt;SCC&lt;/b&gt; Event Threat Detection&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;SA 키 생성·권한 상승 탐지&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#4285F4;" vertex="1" parent="1">
+          <mxGeometry x="585" y="700" width="160" height="60" as="geometry" />
         </mxCell>
-
-        <mxCell id="awsb" value="AWS 백업 계정 · 격리 백업 (별도 계정)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF6EB;strokeColor=#FF9900;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=6;fontSize=15;fontStyle=1;fontColor=#B35C00;arcSize=2;" vertex="1" parent="1">
-          <mxGeometry x="780" y="120" width="360" height="560" as="geometry" />
+        <mxCell id="sink" value="&lt;b&gt;조직 집계 로그 싱크 + 탐지 규칙&lt;/b&gt;&lt;br&gt;(Cloud Logging · Monitoring 알림 정책)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FEF7E0;strokeColor=#F9AB00;" vertex="1" parent="1">
+          <mxGeometry x="200" y="800" width="420" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="pull" value="&lt;b&gt;백업 Pull 작업&lt;/b&gt;&lt;br&gt;EventBridge 스케줄 + Lambda / ECS Task" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FF9900;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="800" y="200" width="320" height="65" as="geometry" />
+        <mxCell id="sinknote" value="⚠ 공격자는 조직 권한으로 로깅·SCC를 끌 수 있음&lt;br&gt;→ 알림은 &lt;b&gt;GCP 밖 채널로 즉시 전송&lt;/b&gt;, 감사 로그 사본은 AWS가 pull해서 불변 보관" style="text;html=1;whiteSpace=wrap;fontSize=11;fontColor=#A50E0E;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="200" y="870" width="540" height="45" as="geometry" />
         </mxCell>
-        <mxCell id="pullnote" value="GCP 접근: Workload Identity Federation으로&lt;br&gt;Export 버킷 &lt;b&gt;읽기 전용&lt;/b&gt; SA만 사용&lt;br&gt;→ GCP 쪽에 AWS 키 없음, 장기 키 없음" style="text;html=1;whiteSpace=wrap;fontSize=11;fontColor=#555555;align=left;verticalAlign=top;" vertex="1" parent="1">
-          <mxGeometry x="800" y="275" width="320" height="60" as="geometry" />
+        <mxCell id="isolate" value="&lt;b&gt;격리 런북 (GCP)&lt;/b&gt;: 외부 통신 차단 · 서비스 계정 키 폐기 · 숨은 SA / IAM 바인딩 제거 · 포렌식 스냅샷 보존&lt;br&gt;→ GCP를 &lt;b&gt;'신뢰 불가'&lt;/b&gt;로 선언하고 청소 대기" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FDECEA;strokeColor=#D93025;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1035" width="700" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="hash" value="&lt;b&gt;무결성 검증&lt;/b&gt;&lt;br&gt;SHA-256 매니페스트 비교" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FF9900;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="800" y="345" width="320" height="55" as="geometry" />
+        <mxCell id="c2" value="&lt;b&gt;외부 C2 서버 (모의)&lt;/b&gt;&lt;br&gt;실제 악성 기능 없음" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FDECEA;strokeColor=#D93025;fontColor=#A50E0E;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1180" width="200" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="s3lock" value="&lt;b&gt;S3 백업 버킷&lt;/b&gt;&lt;br&gt;Object Lock (Compliance 모드) · 버전 관리&lt;br&gt;DB 덤프 / 첨부파일 / IaC 코드" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FF9900;strokeWidth=2;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="800" y="430" width="320" height="80" as="geometry" />
+        <mxCell id="ir" value="사고 대응 지휘 (GCP 외부에서 수행)" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=6;fontSize=15;fontStyle=1;arcSize=1;fillColor=#F5F5F5;strokeColor=#5F6368;fontColor=#3C4043;" vertex="1" parent="1">
+          <mxGeometry x="820" y="150" width="320" height="990" as="geometry" />
         </mxCell>
-        <mxCell id="s3note" value="DR 계정에는 &lt;b&gt;교차 계정 읽기 전용&lt;/b&gt; 권한만 부여&lt;br&gt;삭제·덮어쓰기 불가 (Compliance 보존 기간)&lt;br&gt;평시 비용: 저장소 요금만 (월 몇 달러 수준)" style="text;html=1;whiteSpace=wrap;fontSize=11;fontColor=#555555;align=left;verticalAlign=top;" vertex="1" parent="1">
-          <mxGeometry x="800" y="525" width="320" height="70" as="geometry" />
+        <mxCell id="alert" value="&lt;b&gt;③ 탐지 알림 수신&lt;/b&gt;&lt;br&gt;Slack / PagerDuty / 메일&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;GCP 계정과 무관한 채널&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FEF7E0;strokeColor=#F9AB00;" vertex="1" parent="1">
+          <mxGeometry x="840" y="200" width="280" height="75" as="geometry" />
         </mxCell>
-
-        <mxCell id="awsd" value="AWS DR 계정 · 클린 DR (사고 시 Terraform으로 생성)  ⑤" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFBF5;strokeColor=#FF9900;strokeWidth=2;dashed=1;verticalAlign=top;align=left;spacingLeft=12;spacingTop=6;fontSize=15;fontStyle=1;fontColor=#B35C00;arcSize=2;" vertex="1" parent="1">
-          <mxGeometry x="1200" y="120" width="580" height="790" as="geometry" />
+        <mxCell id="analyze" value="&lt;b&gt;관리자 분석 · 판단&lt;/b&gt;&lt;br&gt;침해 범위 · 조직 권한 탈취 여부&lt;br&gt;&lt;b&gt;침해 시작 시점&lt;/b&gt; 추정 (= 복원 기준점)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#5F6368;" vertex="1" parent="1">
+          <mxGeometry x="840" y="310" width="280" height="85" as="geometry" />
         </mxCell>
-
-        <mxCell id="g_clean" value="클린 빌드 파이프라인 (GCP 파이프라인과 완전 분리)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#34A853;dashed=1;verticalAlign=top;align=left;spacingLeft=8;fontSize=11;fontColor=#137333;arcSize=4;" vertex="1" parent="1">
-          <mxGeometry x="1220" y="160" width="540" height="160" as="geometry" />
+        <mxCell id="approve" value="&lt;b&gt;관리자 승인 (Human-in-the-loop)&lt;/b&gt;&lt;br&gt;GCP '신뢰 불가' 선언 · 격리 실행&lt;br&gt;DR 발동 · 복원 시점 확정" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#EDE7F6;strokeColor=#5E35B1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="840" y="430" width="280" height="85" as="geometry" />
         </mxCell>
-        <mxCell id="commit" value="&lt;b&gt;마지막 검증된 커밋&lt;/b&gt;&lt;br&gt;의존성 고정 (lock)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F4EA;strokeColor=#34A853;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="1235" y="195" width="160" height="55" as="geometry" />
+        <mxCell id="reject" value="&lt;b&gt;✕ 채택하지 않음: GCP → ECR 이미지 사전 복제&lt;/b&gt;&lt;br&gt;오염 시작 시점을 알 수 없어 'Known-Good'을 보장 못 함 · GCP에 AWS 쓰기 권한이 생김 → 사고 시 &lt;b&gt;새로 빌드&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#D93025;fontColor=#A50E0E;dashed=1;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="840" y="560" width="280" height="105" as="geometry" />
         </mxCell>
-        <mxCell id="scan" value="&lt;b&gt;SBOM 생성&lt;/b&gt;&lt;br&gt;Trivy 취약점 스캔" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F4EA;strokeColor=#34A853;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="1415" y="195" width="160" height="55" as="geometry" />
+        <mxCell id="dns" value="&lt;b&gt;DNS&lt;/b&gt; — Route 53 (별도 계정) / Cloudflare&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;GCP Cloud DNS 사용 금지 (공격자가 장악 가능)&lt;/font&gt;&lt;br&gt;평시 → GCP · ⑥ 사고 시 → AWS" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#5F6368;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="840" y="740" width="280" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="sign" value="&lt;b&gt;cosign 서명&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F4EA;strokeColor=#34A853;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="1595" y="195" width="150" height="55" as="geometry" />
+        <mxCell id="post" value="&lt;b&gt;⑦ 사후 조치&lt;/b&gt;&lt;br&gt;GCP 재구축 여부 결정&lt;br&gt;SBOM · 의존성 고정 · 빌드 서명 의무화" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#5F6368;" vertex="1" parent="1">
+          <mxGeometry x="840" y="1000" width="280" height="75" as="geometry" />
         </mxCell>
-        <mxCell id="ecr" value="&lt;b&gt;ECR&lt;/b&gt;&lt;br&gt;서명 검증된 이미지만" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FF9900;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="1595" y="262" width="150" height="50" as="geometry" />
+        <mxCell id="users" value="&lt;b&gt;사내 사용자&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#5F6368;" vertex="1" parent="1">
+          <mxGeometry x="915" y="1185" width="130" height="50" as="geometry" />
         </mxCell>
-
-        <mxCell id="tf" value="&lt;b&gt;Terraform&lt;/b&gt;: VPC · EKS(또는 ECS) · RDS · S3 생성" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E8FD;strokeColor=#7B1FA2;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="1220" y="345" width="540" height="40" as="geometry" />
+        <mxCell id="awsb" value="AWS 백업 계정 · 격리 백업 (항상 존재, 별도 계정)" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=6;fontSize=15;fontStyle=1;arcSize=1;fillColor=#FFF6EB;strokeColor=#FF9900;fontColor=#B35C00;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="150" width="800" height="370" as="geometry" />
         </mxCell>
-
-        <mxCell id="vpc" value="VPC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#FF9900;dashed=1;verticalAlign=top;align=left;spacingLeft=8;fontSize=11;fontColor=#B35C00;arcSize=4;" vertex="1" parent="1">
-          <mxGeometry x="1220" y="410" width="540" height="200" as="geometry" />
+        <mxCell id="pull" value="&lt;b&gt;백업 Pull 작업&lt;/b&gt;&lt;br&gt;EventBridge 스케줄&lt;br&gt;+ Lambda / ECS Task" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#FF9900;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="200" width="230" height="75" as="geometry" />
         </mxCell>
-        <mxCell id="eks" value="&lt;b&gt;EKS / ECS&lt;/b&gt;&lt;br&gt;웹 프론트 + API 서버" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FF9900;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="1240" y="470" width="200" height="70" as="geometry" />
+        <mxCell id="hash" value="&lt;b&gt;무결성 검증&lt;/b&gt;&lt;br&gt;SHA-256 매니페스트" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#FF9900;" vertex="1" parent="1">
+          <mxGeometry x="1465" y="200" width="200" height="75" as="geometry" />
         </mxCell>
-        <mxCell id="rds" value="&lt;b&gt;RDS&lt;/b&gt;&lt;br&gt;PostgreSQL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FF9900;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="1545" y="440" width="190" height="55" as="geometry" />
+        <mxCell id="s3lock" value="&lt;b&gt;S3 백업 버킷&lt;/b&gt;&lt;br&gt;Object Lock (Compliance) · 버전 관리&lt;br&gt;DB 덤프 / 첨부파일 / IaC / 감사 로그" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#FF9900;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1700" y="190" width="260" height="95" as="geometry" />
         </mxCell>
-        <mxCell id="s3att" value="&lt;b&gt;S3&lt;/b&gt;&lt;br&gt;첨부파일" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FF9900;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="1545" y="530" width="190" height="55" as="geometry" />
+        <mxCell id="pullnote" value="GCP 접근: Workload Identity Federation → Export 버킷 &lt;b&gt;읽기 전용&lt;/b&gt; SA&lt;br&gt;→ GCP 쪽에 AWS 키 없음 · 장기 키 없음" style="text;html=1;whiteSpace=wrap;fontSize=11;fontColor=#555555;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="290" width="470" height="45" as="geometry" />
         </mxCell>
-
-        <mxCell id="restore" value="&lt;b&gt;복원 스크립트&lt;/b&gt;&lt;br&gt;침해 &lt;b&gt;이전 시점&lt;/b&gt; 백업 선택 → 해시 검증 → 첨부파일 악성코드 스캔&lt;br&gt;→ DB 권한 테이블 점검 → RDS · S3 복원" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FF9900;strokeWidth=2;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="1220" y="660" width="540" height="80" as="geometry" />
+        <mxCell id="trail" value="&lt;b&gt;CloudTrail + EventBridge 알림&lt;/b&gt;&lt;br&gt;삭제 · 버킷 정책 변경 시도 감지" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#FF9900;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="420" width="280" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="verify" value="&lt;b&gt;⑥ 전환 · 검증&lt;/b&gt;&lt;br&gt;데이터 무결성 · 이상 통신 여부 확인 · &lt;b&gt;RTO / RPO 측정&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F4EA;strokeColor=#34A853;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="1220" y="790" width="540" height="65" as="geometry" />
+        <mxCell id="s3note" value="DR 계정에는 &lt;b&gt;교차 계정 읽기 전용&lt;/b&gt;만 부여&lt;br&gt;Compliance 보존 기간 동안 루트도 삭제 불가&lt;br&gt;평시 비용: 저장소 요금만 (월 몇 달러 수준)" style="text;html=1;whiteSpace=wrap;fontSize=11;fontColor=#555555;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1700" y="300" width="270" height="70" as="geometry" />
         </mxCell>
-
-        <mxCell id="users" value="&lt;b&gt;사내 사용자&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#5F6368;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="800" y="960" width="130" height="50" as="geometry" />
+        <mxCell id="awsd" value="AWS DR 계정 · 클린 DR (평시 없음 → 사고 시 Terraform으로 생성)  ⑤" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=6;fontSize=15;fontStyle=1;arcSize=1;fillColor=#FFFBF5;strokeColor=#FF9900;fontColor=#B35C00;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="560" width="800" height="580" as="geometry" />
         </mxCell>
-        <mxCell id="dns" value="&lt;b&gt;DNS&lt;/b&gt; (Route 53 / Cloudflare)&lt;br&gt;평시 → GCP, 사고 시 → AWS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#5F6368;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="980" y="950" width="230" height="70" as="geometry" />
+        <mxCell id="g_clean" value="클린 빌드 파이프라인 — AWS 내 러너, GCP와 신원 · 실행 환경 공유 없음" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;dashed=1;verticalAlign=top;align=left;spacingLeft=8;fontSize=11;arcSize=3;strokeColor=#34A853;fontColor=#137333;" vertex="1" parent="1">
+          <mxGeometry x="1195" y="600" width="770" height="115" as="geometry" />
         </mxCell>
-
-        <mxCell id="legend" value="&lt;b&gt;범례&lt;/b&gt;&lt;br&gt;━━ 평시 흐름 &amp;nbsp;&amp;nbsp; ╍╍ 사고 시 복구 흐름 &amp;nbsp;&amp;nbsp; &lt;font color=&quot;#D93025&quot;&gt;╍╍ 공격 경로&lt;/font&gt;&lt;br&gt;파랑 GCP · 주황 AWS · 초록 검증/클린 빌드 · 빨강 침해/격리&lt;br&gt;번호 ①~⑦은 발표 스토리 순서 (CLAUDE.md)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#BDBDBD;fontSize=11;align=left;spacingLeft=10;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="1260" y="940" width="520" height="90" as="geometry" />
+        <mxCell id="commit" value="&lt;b&gt;마지막 검증된 커밋&lt;/b&gt;&lt;br&gt;의존성 고정 (lock)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#E6F4EA;strokeColor=#34A853;" vertex="1" parent="1">
+          <mxGeometry x="1210" y="635" width="175" height="60" as="geometry" />
         </mxCell>
-
-        <mxCell id="e1" value="소스" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="github" target="cloudbuild">
+        <mxCell id="scan" value="&lt;b&gt;SBOM · Trivy · SAST&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#E6F4EA;strokeColor=#34A853;" vertex="1" parent="1">
+          <mxGeometry x="1405" y="635" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="sign" value="&lt;b&gt;cosign 서명&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;AWS KMS 신규 키&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#E6F4EA;strokeColor=#34A853;" vertex="1" parent="1">
+          <mxGeometry x="1595" y="635" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ecr" value="&lt;b&gt;ECR&lt;/b&gt;&lt;br&gt;태그 불변 · Digest 고정" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#FF9900;" vertex="1" parent="1">
+          <mxGeometry x="1765" y="635" width="185" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="orch" value="&lt;b&gt;복구 오케스트레이터 + Terraform&lt;/b&gt;: VPC · EKS/ECS · RDS · S3 · Secrets Manager 생성 → 복원 → 배포&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;단계별 타임스탬프 자동 기록 → RTO 측정 근거&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#F3E8FD;strokeColor=#7B1FA2;" vertex="1" parent="1">
+          <mxGeometry x="1195" y="735" width="770" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="vpc" value="VPC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;dashed=1;verticalAlign=top;align=left;spacingLeft=8;fontSize=11;arcSize=3;strokeColor=#FF9900;fontColor=#B35C00;" vertex="1" parent="1">
+          <mxGeometry x="1195" y="810" width="770" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="alb" value="&lt;b&gt;ALB + AWS WAF&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#FF9900;" vertex="1" parent="1">
+          <mxGeometry x="1210" y="845" width="160" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="eks" value="&lt;b&gt;EKS / ECS&lt;/b&gt;&lt;br&gt;웹 프론트 + API 서버&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;배포 시 cosign 서명 검증&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#FF9900;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="840" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="rds" value="&lt;b&gt;RDS&lt;/b&gt; PostgreSQL" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#FF9900;" vertex="1" parent="1">
+          <mxGeometry x="1640" y="840" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="s3att" value="&lt;b&gt;S3&lt;/b&gt; 첨부파일" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#FF9900;" vertex="1" parent="1">
+          <mxGeometry x="1805" y="840" width="145" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sm" value="&lt;b&gt;Secrets Manager / KMS&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;DB 비밀번호 · API 키 · JWT 키 전부 신규 발급&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#FF9900;" vertex="1" parent="1">
+          <mxGeometry x="1640" y="920" width="310" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="mon" value="&lt;b&gt;CloudWatch · GuardDuty · VPC Flow Logs&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;복구 후 이상 통신 · 재감염 여부 감시&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#FF9900;" vertex="1" parent="1">
+          <mxGeometry x="1210" y="935" width="390" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="restore" value="&lt;b&gt;복원 스크립트&lt;/b&gt;: 침해 &lt;b&gt;이전 시점&lt;/b&gt; 선택 → 해시 검증&lt;br&gt;→ 첨부파일 악성코드 스캔 → DB 권한 테이블 점검 → 복원" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#FF9900;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1195" y="1045" width="470" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="verify" value="&lt;b&gt;⑥ 전환 · 검증&lt;/b&gt;&lt;br&gt;무결성 · 이상 통신 확인&lt;br&gt;&lt;b&gt;RTO / RPO 측정&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#E6F4EA;strokeColor=#34A853;" vertex="1" parent="1">
+          <mxGeometry x="1690" y="1045" width="260" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" value="&lt;b&gt;범례&lt;/b&gt;  ━━ 평시 흐름   ╍╍ 사고 시 흐름   &lt;font color=&quot;#D93025&quot;&gt;╍╍ 공격 경로&lt;/font&gt;&lt;br&gt;파랑 GCP · 주황 AWS · 초록 검증/클린 빌드 · 보라 승인/오케스트레이션 · 빨강 침해/격리/미채택&lt;br&gt;①~⑦ = CLAUDE.md 발표 스토리 순서" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FAFAFA;strokeColor=#BDBDBD;align=left;spacingLeft=10;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="1170" width="800" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" value="소스" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#333333;" edge="1" parent="1" source="github" target="cloudbuild">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e2" value="오염된 의존성" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#D93025;fontColor=#D93025;dashed=1;strokeWidth=2;fontSize=10;" edge="1" parent="1" source="deps" target="cloudbuild">
+        <mxCell id="e2" value="오염된 의존성" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#D93025;fontColor=#D93025;dashed=1;strokeWidth=2;" edge="1" parent="1" source="deps" target="cloudbuild">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e3" value="push" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="cloudbuild" target="ar">
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#333333;" edge="1" parent="1" source="cloudbuild" target="ar">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e4" value="배포 (백도어 이미지 포함)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="ar" target="app">
+        <mxCell id="e4" value="배포 (검증 통과한 백도어 이미지)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#333333;" edge="1" parent="1" source="ar" target="app">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e5" value="키 탈취 → 숨은 SA · IAM 바인딩" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#D93025;fontColor=#D93025;dashed=1;strokeWidth=2;fontSize=10;" edge="1" parent="1" source="app" target="cisa">
+        <mxCell id="e5" value="키 탈취 → 숨은 SA · IAM 바인딩" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#D93025;fontColor=#D93025;dashed=1;strokeWidth=2;" edge="1" parent="1" source="app" target="cisa">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e6" value="비콘" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#D93025;fontColor=#D93025;dashed=1;strokeWidth=2;fontSize=10;" edge="1" parent="1" source="app" target="c2">
+        <mxCell id="e6" value="비콘" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#D93025;fontColor=#D93025;dashed=1;strokeWidth=2;" edge="1" parent="1" source="app" target="c2">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;" edge="1" parent="1" source="app" target="cloudsql">
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;" edge="1" parent="1" source="lb" target="app">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;" edge="1" parent="1" source="app" target="gcs">
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;" edge="1" parent="1" source="app" target="cloudsql">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e9" value="덤프" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="cloudsql" target="export">
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;" edge="1" parent="1" source="app" target="gcs">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e10" value="복사" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="gcs" target="export">
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;" edge="1" parent="1" source="app" target="secret">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e11" value="AWS가 가져감 (pull)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#FF9900;strokeWidth=2;fontSize=10;fontColor=#B35C00;" edge="1" parent="1" source="export" target="pull">
+        <mxCell id="e11" value="덤프" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#333333;" edge="1" parent="1" source="cloudsql" target="export">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e12" value="IaC 코드" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#FF9900;fontSize=10;fontColor=#B35C00;" edge="1" parent="1" source="github" target="pull">
+        <mxCell id="e12" value="복사" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#333333;" edge="1" parent="1" source="gcs" target="export">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#FF9900;" edge="1" parent="1" source="pull" target="hash">
+        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;" edge="1" parent="1" source="audit" target="sink">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e14" value="쓰기 (불변)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#FF9900;fontSize=10;fontColor=#B35C00;" edge="1" parent="1" source="hash" target="s3lock">
+        <mxCell id="e14" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;" edge="1" parent="1" source="flow" target="sink">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;" edge="1" parent="1" source="flow" target="alert">
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;" edge="1" parent="1" source="falco" target="sink">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;" edge="1" parent="1" source="audit" target="alert">
+        <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;" edge="1" parent="1" source="scc" target="sink">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e17" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;" edge="1" parent="1" source="falco" target="alert">
+        <mxCell id="e17" value="감사 로그 사본" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#333333;" edge="1" parent="1" source="sink" target="export">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e18" value="런북 실행" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#D93025;fontColor=#D93025;fontSize=10;" edge="1" parent="1" source="alert" target="isolate">
+        <mxCell id="e18" value="즉시 알림 (외부 채널)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#F9AB00;fontColor=#B06000;strokeWidth=2;" edge="1" parent="1" source="sink" target="alert">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e19" value="검증된 커밋만 (사고 시)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#34A853;dashed=1;strokeWidth=2;fontSize=10;fontColor=#137333;" edge="1" parent="1" source="github" target="commit">
+        <mxCell id="e19" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#5F6368;" edge="1" parent="1" source="alert" target="analyze">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e20" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#34A853;" edge="1" parent="1" source="commit" target="scan">
+        <mxCell id="e20" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#5F6368;" edge="1" parent="1" source="analyze" target="approve">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e21" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#34A853;" edge="1" parent="1" source="scan" target="sign">
+        <mxCell id="e21" value="④ 격리 실행" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#D93025;fontColor=#D93025;dashed=1;strokeWidth=2;" edge="1" parent="1" source="approve" target="isolate">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e22" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#34A853;" edge="1" parent="1" source="sign" target="ecr">
+        <mxCell id="e22" value="⑤ DR 발동" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#7B1FA2;fontColor=#7B1FA2;dashed=1;strokeWidth=2;" edge="1" parent="1" source="approve" target="orch">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e23" value="서명 검증 후 배포" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#FF9900;dashed=1;fontSize=10;fontColor=#B35C00;" edge="1" parent="1" source="ecr" target="eks">
+        <mxCell id="e23" value="AWS가 가져감 (pull)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#FF9900;fontColor=#B35C00;strokeWidth=2;" edge="1" parent="1" source="export" target="pull">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e24" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#FF9900;" edge="1" parent="1" source="eks" target="rds">
+        <mxCell id="e24" value="IaC 코드" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#FF9900;fontColor=#B35C00;" edge="1" parent="1" source="github" target="pull">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e25" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#FF9900;" edge="1" parent="1" source="eks" target="s3att">
+        <mxCell id="e25" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#FF9900;" edge="1" parent="1" source="pull" target="hash">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e26" value="교차 계정 읽기 (사고 시)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#FF9900;dashed=1;strokeWidth=2;fontSize=10;fontColor=#B35C00;" edge="1" parent="1" source="s3lock" target="restore">
+        <mxCell id="e26" value="쓰기 (불변)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#FF9900;fontColor=#B35C00;" edge="1" parent="1" source="hash" target="s3lock">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e27" value="복원" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#FF9900;dashed=1;fontSize=10;fontColor=#B35C00;" edge="1" parent="1" source="restore" target="rds">
+        <mxCell id="e27" value="검증된 커밋만 (사고 시)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#34A853;fontColor=#137333;dashed=1;strokeWidth=2;" edge="1" parent="1" source="github" target="commit">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e28" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#FF9900;dashed=1;" edge="1" parent="1" source="restore" target="s3att">
+        <mxCell id="e28" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#34A853;" edge="1" parent="1" source="commit" target="scan">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e29" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#34A853;dashed=1;" edge="1" parent="1" source="restore" target="verify">
+        <mxCell id="e29" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#34A853;" edge="1" parent="1" source="scan" target="sign">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e30" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#5F6368;" edge="1" parent="1" source="users" target="dns">
+        <mxCell id="e30" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#34A853;" edge="1" parent="1" source="sign" target="ecr">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e31" value="평시" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#4285F4;strokeWidth=2;fontSize=10;fontColor=#1A56C4;" edge="1" parent="1" source="dns" target="app">
+        <mxCell id="e31" value="서명 검증 후 배포" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#FF9900;fontColor=#B35C00;dashed=1;" edge="1" parent="1" source="ecr" target="eks">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e32" value="⑥ 사고 시 전환" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#FF9900;strokeWidth=2;dashed=1;fontSize=10;fontColor=#B35C00;" edge="1" parent="1" source="dns" target="eks">
+        <mxCell id="e32" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#FF9900;" edge="1" parent="1" source="alb" target="eks">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e33" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#FF9900;" edge="1" parent="1" source="eks" target="rds">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e34" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#FF9900;" edge="1" parent="1" source="eks" target="sm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e35" value="교차 계정 읽기 (사고 시)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#FF9900;fontColor=#B35C00;dashed=1;strokeWidth=2;" edge="1" parent="1" source="s3lock" target="restore">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e36" value="복원" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#FF9900;fontColor=#B35C00;dashed=1;" edge="1" parent="1" source="restore" target="rds">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e37" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#FF9900;dashed=1;" edge="1" parent="1" source="restore" target="s3att">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e38" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#34A853;dashed=1;" edge="1" parent="1" source="restore" target="verify">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e39" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#5F6368;" edge="1" parent="1" source="users" target="dns">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e40" value="평시" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#4285F4;fontColor=#1A56C4;strokeWidth=2;" edge="1" parent="1" source="dns" target="lb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e41" value="⑥ 사고 시 전환" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#FF9900;fontColor=#B35C00;dashed=1;strokeWidth=2;" edge="1" parent="1" source="dns" target="alb">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>
