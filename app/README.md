@@ -5,7 +5,7 @@
 ## 구성
 
 - `api/` — Spring Boot (Java 21, Gradle Kotlin DSL)
-- `web/` — 프론트엔드. 현재는 nginx 정적 플레이스홀더이며 React(Vite)는 E1-9에서 구현
+- `web/` — React + Vite + TypeScript (로그인, 문서 목록·작성·상세, 결재, 첨부, 관리/무결성 검증)
 - `docker-compose.yml` — api · web · postgres · minio
 
 ## 전체 실행 (Docker)
@@ -68,9 +68,20 @@ cd api
 - 의존성 잠금: `gradle.lockfile` (공급망 방어). 의존성을 바꾸면 `./gradlew dependencies --write-locks`로 갱신한다
 - SBOM: `./gradlew cyclonedxBom` → `build/reports/bom.json` (클린 파이프라인 Trivy 입력)
 
+## 프론트엔드 (web)
+
+```bash
+cd app/web
+npm ci
+npm run dev     # http://localhost:5173 (API는 /api, /version을 :8080으로 프록시)
+npm run build   # 타입체크 + dist 빌드
+```
+
+- 운영 이미지는 non-root nginx가 `dist`를 서빙하고 `/api`·`/version`을 api 컨테이너로 프록시한다 (`web/nginx.conf`).
+- **로컬 첨부 다운로드 한계**: 다운로드는 S3 서명 URL(302)로 간다. compose에서 API의 S3 엔드포인트가 `minio:9000`이라 브라우저가 그 호스트를 못 찾는다. 브라우저에서 바로 받으려면 API를 로컬에서 띄우고 MinIO를 `localhost:9000`으로 두면 된다. (운영은 GCS/S3 공개 엔드포인트라 문제없음)
+
 ## 아직 안 된 것 (다음 작업)
 
-- E1-9 React(Vite) 프론트엔드 (지금은 플레이스홀더)
 - E1-10 데모 프로파일 (데이터 생성기, 대량 시드, 권한 점검 SQL, 체인 검증 CLI)
 - GCS 스토리지 드라이버 (현재 S3/MinIO만. 인터페이스는 준비됨)
 - Testcontainers 통합 테스트 (결재 흐름 end-to-end)

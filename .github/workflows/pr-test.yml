@@ -8,11 +8,13 @@ on:
     branches: [main]
     paths:
       - "app/api/**"
+      - "app/web/**"
       - ".github/workflows/pr-test.yml"
   push:
     branches-ignore: [main]
     paths:
       - "app/api/**"
+      - "app/web/**"
       - ".github/workflows/pr-test.yml"
 
 permissions:
@@ -54,3 +56,25 @@ jobs:
           name: test-results
           path: app/api/build/reports/tests/test
           if-no-files-found: ignore
+
+  web:
+    name: web 타입체크·빌드 (Node 22)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/web
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: app/web/package-lock.json
+
+      - name: 의존성 설치 (lockfile 고정)
+        run: npm ci
+
+      - name: 타입체크·빌드
+        run: npm run build
