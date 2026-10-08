@@ -22,7 +22,7 @@
 > 클린 환경을 열어 사내 업무를 복구한다.
 
 - 주 운영 환경: **GCP**
-- 복구 환경: **AWS** (평소에는 백업 저장소만 유지하고, 사고가 나면 IaC로 클린 환경을 생성)
+- 복구 환경: **AWS** (평소에는 백업 저장소와 비용 0원인 복구 제어 영역만 유지하고, 사고가 나면 IaC로 클린 환경을 생성)
 - 대상 애플리케이션: 가벼운 **사내 서비스**. 예시는 사내 전자결재·휴가·비품 신청 시스템
   - 구성: 웹 프론트, API 서버, PostgreSQL, 첨부파일 스토리지
 
@@ -49,7 +49,7 @@
 - **AWS 계정은 3개로 분리**한다 (AWS Organizations, 관리 계정에는 워크로드 없음)
   - 백업 계정: S3 Object Lock 불변 저장. 항상 존재
   - DNS 계정: Route 53. 항상 존재하며 레코드 변경 권한만 둠
-  - DR 계정: 평시에는 없고 사고 시 Terraform으로 생성
+  - DR 계정: 평시에는 비용 0원인 **복구 제어 영역**(Step Functions, CodeBuild 프로젝트, Terraform 상태 버킷, IAM)만 두고, 워크로드는 사고 시 Terraform으로 생성
 - **DNS는 DNS 전용 AWS 계정의 Route 53**에 둔다. GCP Cloud DNS와 Cloudflare는 쓰지 않는다
   - 도메인 등록기관도 GCP 밖에 두고 MFA와 registrar lock을 건다
   - 자동 failover는 쓰지 않고 관리자 승인 후 수동으로 전환한다. TTL은 60초로 유지한다
@@ -63,6 +63,9 @@
 - **백업 Pull 작업은 Lambda(Python)**로 한다. EventBridge Scheduler로 실행한다
   - GCS에서 S3로 스트리밍 복사하고 첨부파일은 증분 복사한다. GCP 매니페스트 해시, Lambda 계산 해시, S3 체크섬을 이중으로 확인한다
   - DB 덤프는 GCP 쪽(Cloud SQL 내보내기)에서 만든다. AWS는 Cloud SQL에 직접 접속하지 않는다
+- **복구 오케스트레이터는 혼합안**으로 한다: 실제 작업은 CodeBuild의 Make 스크립트, Step Functions는 순서·병렬·승인 대기·시각 기록만 맡음
+  - 흐름: [인프라 ∥ 클린 빌드] → 복원 → 배포 → 스모크 → 승인 대기 → DNS 전환(담당자가 실행) → 사후 검증 및 RTO/RPO 보고서
+  - 1단계는 스크립트만으로 MVP를 만들고, 2단계(발표 전)에 Step Functions로 감싼다
 - **사내 서비스는 전자결재 + 휴가 신청**으로 한다 (상세: `docs/app/README.md`)
   - API는 **Spring Boot (Java 21, Gradle)**, 프론트엔드는 React + Vite. 컨테이너 2개(`web`, `api`)로 구성하고 MSA로 나누지 않음
   - 로그인은 앱 자체 로그인(JWT)으로 한다. Google 계정 SSO는 쓰지 않음
