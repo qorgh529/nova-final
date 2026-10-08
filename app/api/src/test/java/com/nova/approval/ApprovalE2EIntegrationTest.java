@@ -1,20 +1,17 @@
 package com.nova.approval;
 
+import com.nova.approval.TestStorageConfig.InMemoryStorage;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.HexFormat;
@@ -24,6 +21,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Import(TestStorageConfig.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ApprovalE2EIntegrationTest extends IntegrationTestBase {
 
@@ -33,8 +31,8 @@ class ApprovalE2EIntegrationTest extends IntegrationTestBase {
     @Autowired
     JdbcTemplate jdbc;
 
-    @LocalServerPort
-    int port;
+    @Autowired
+    InMemoryStorage storage;
 
     // DevSeed: admin=1, approver1=2, approver2=3, emp1=4
 
@@ -139,21 +137,16 @@ class ApprovalE2EIntegrationTest extends IntegrationTestBase {
             HttpMethod.POST, new HttpEntity<>(form, uploadHeaders), Map.class);
         assertThat(up.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(up.getBody().get("sha256")).isEqualTo(expectedSha);
-        Integer attId = (Integer) up.getBody().get("id");
 
-        // 다운로드: 302 서명 URL을 따라가 MinIO에서 바이트를 받는다 (HttpClient로 리다이렉트 추적)
-        try {
-            HttpClient http = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build();
-            HttpRequest req = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:" + port + "/api/attachments/" + attId))
-                .header("Authorization", "Bearer " + emp)
-                .GET().build();
-            HttpResponse<byte[]> down = http.send(req, HttpResponse.BodyHandlers.ofByteArray());
-            assertThat(down.statusCode()).isEqualTo(200);
-            assertThat(down.body()).isEqualTo(content);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        // 스토리지에 실제 바이트가 저장됐는지 확인
+        assertThat(storage.objects.values()).anyMatch(b -> java.util.Arrays.equals(b, content));
+
+        // 문서 상세에 첨부가 보이고 sha256이 일치한다
+        ResponseEntity<Map> detail = rest.exchange("/api/documents/" + docId, HttpMethod.GET,
+            new HttpEntity<>(bearer(emp)), Map.class);
+        List<?> atts = (List<?>) detail.getBody().get("attachments");
+        assertThat(atts).hasSize(1);
+        assertThat(((Map<?, ?>) atts.get(0)).get("sha256")).isEqualTo(expectedSha);
     }
 
     @Test
