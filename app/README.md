@@ -61,9 +61,13 @@ curl -s localhost:8080/api/documents -H "Authorization: Bearer $TOKEN" -H 'Conte
 
 ```bash
 cd api
-./gradlew test          # 단위 테스트 (해시 체인 등)
+./gradlew test          # 단위 테스트 + Testcontainers 통합 테스트
 ./gradlew bootJar       # 실행 가능한 jar
 ```
+
+- **통합 테스트**(`ApprovalE2EIntegrationTest`)는 Testcontainers로 Postgres와 MinIO를 띄워 결재 흐름을
+  end-to-end 검증한다: 로그인 → 작성 → 상신 → 단계별 승인 → 무결성 검증, 첨부 업로드·다운로드 왕복,
+  체인 위변조 탐지, 잘못된 결재자 403. **실행에는 Docker가 필요하다** (CI는 ubuntu-latest에서 동작).
 
 - 의존성 잠금: `gradle.lockfile` (공급망 방어). 의존성을 바꾸면 `./gradlew dependencies --write-locks`로 갱신한다
 - SBOM: `./gradlew cyclonedxBom` → `build/reports/bom.json` (클린 파이프라인 Trivy 입력)
