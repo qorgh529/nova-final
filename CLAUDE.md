@@ -70,6 +70,9 @@
   - API는 **Spring Boot (Java 21, Gradle)**, 프론트엔드는 React + Vite. 컨테이너 2개(`web`, `api`)로 구성하고 MSA로 나누지 않음
   - 로그인은 앱 자체 로그인(JWT)으로 한다. Google 계정 SSO는 쓰지 않음
   - 데모용 기능: 역할 테이블(숨은 관리자 점검), 결재 이력 해시 체인(헤드 해시는 불변 백업에 기록), 첨부파일 EICAR 스캔, `/version`, 데이터 생성기(RPO 측정)
+- **모의 백도어 주입 지점은 Gradle 의존성**으로 한다 (상세: `docs/app/README.md` 7절)
+  - 빌드 시점(Cloud Build)과 런타임(GKE) 두 단계로 동작시켜 양쪽 탐지를 모두 보여준다
+  - 실제 악성 기능 없음. 비콘은 호스트 이름·타임스탬프만, `DEMO_BACKDOOR=on` 킬 스위치, 격리된 데모 프로젝트와 제한 권한 SA, `SIMULATED/DEMO ONLY` 표기, 데모 후 제거
 
 ## 작업 단위(에픽)
 

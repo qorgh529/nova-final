@@ -163,4 +163,4 @@ Terraform apply, 클린 빌드, `pg_restore`는 Step Functions가 직접 할 수
 
 ## 미확정
 
-- 모의 백도어 주입 지점 (E4, [`../app/README.md`](../app/README.md) 7절 참고)
+- 아키텍처 수준의 주요 선택지는 모두 확정됨 (세부 구현은 각 에픽에서 진행)
