@@ -60,6 +60,9 @@
 - **CI/CD**: 평시 빌드·배포는 **Cloud Build**, 사고 시 클린 빌드는 **AWS CodeBuild**(DR 계정), PR 테스트는 **GitHub Actions**로 한다
   - GitHub에는 어떤 클라우드 자격증명도 두지 않는다. 클린 빌드는 고정된 커밋 SHA만 가져온다
   - 평시 빌드가 GCP 침해 범위 안에 있어야 "클린 파이프라인이 AWS에 따로 필요하다"는 논리가 선다
+- **백업 Pull 작업은 Lambda(Python)**로 한다. EventBridge Scheduler로 실행한다
+  - GCS에서 S3로 스트리밍 복사하고 첨부파일은 증분 복사한다. GCP 매니페스트 해시, Lambda 계산 해시, S3 체크섬을 이중으로 확인한다
+  - DB 덤프는 GCP 쪽(Cloud SQL 내보내기)에서 만든다. AWS는 Cloud SQL에 직접 접속하지 않는다
 - **사내 서비스는 전자결재 + 휴가 신청**으로 한다 (상세: `docs/app/README.md`)
   - API는 **Spring Boot (Java 21, Gradle)**, 프론트엔드는 React + Vite. 컨테이너 2개(`web`, `api`)로 구성하고 MSA로 나누지 않음
   - 로그인은 앱 자체 로그인(JWT)으로 한다. Google 계정 SSO는 쓰지 않음

@@ -109,7 +109,7 @@
         <mxCell id="awsb" value="AWS 백업 계정 · 격리 백업 (항상 존재, 별도 계정)" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=6;fontSize=15;fontStyle=1;arcSize=1;fillColor=#FFF6EB;strokeColor=#FF9900;fontColor=#B35C00;" vertex="1" parent="1">
           <mxGeometry x="1180" y="150" width="800" height="370" as="geometry" />
         </mxCell>
-        <mxCell id="pull" value="&lt;b&gt;백업 Pull 작업&lt;/b&gt;&lt;br&gt;EventBridge 스케줄&lt;br&gt;+ Lambda / ECS Task" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#FF9900;" vertex="1" parent="1">
+        <mxCell id="pull" value="&lt;b&gt;백업 Pull 작업&lt;/b&gt;&lt;br&gt;EventBridge 스케줄 + Lambda (Python)&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;스트리밍 복사 · 증분 · SHA-256 이중 확인&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#FF9900;" vertex="1" parent="1">
           <mxGeometry x="1200" y="200" width="230" height="75" as="geometry" />
         </mxCell>
         <mxCell id="hash" value="&lt;b&gt;무결성 검증&lt;/b&gt;&lt;br&gt;SHA-256 매니페스트" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#FF9900;" vertex="1" parent="1">
