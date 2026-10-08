@@ -77,7 +77,7 @@
           <mxGeometry x="40" y="1180" width="200" height="60" as="geometry" />
         </mxCell>
         <mxCell id="ir" value="사고 대응 지휘 (GCP 외부에서 수행)" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=6;fontSize=15;fontStyle=1;arcSize=1;fillColor=#F5F5F5;strokeColor=#5F6368;fontColor=#3C4043;" vertex="1" parent="1">
-          <mxGeometry x="820" y="150" width="320" height="990" as="geometry" />
+          <mxGeometry x="820" y="150" width="320" height="540" as="geometry" />
         </mxCell>
         <mxCell id="alert" value="&lt;b&gt;③ 탐지 알림 수신&lt;/b&gt;&lt;br&gt;Slack / PagerDuty / 메일&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;GCP 계정과 무관한 채널&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FEF7E0;strokeColor=#F9AB00;" vertex="1" parent="1">
           <mxGeometry x="840" y="200" width="280" height="75" as="geometry" />
@@ -91,8 +91,14 @@
         <mxCell id="reject" value="&lt;b&gt;✕ 채택하지 않음: GCP → ECR 이미지 사전 복제&lt;/b&gt;&lt;br&gt;오염 시작 시점을 알 수 없어 'Known-Good'을 보장 못 함 · GCP에 AWS 쓰기 권한이 생김 → 사고 시 &lt;b&gt;새로 빌드&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#D93025;fontColor=#A50E0E;dashed=1;align=left;spacingLeft=8;" vertex="1" parent="1">
           <mxGeometry x="840" y="560" width="280" height="105" as="geometry" />
         </mxCell>
-        <mxCell id="dns" value="&lt;b&gt;DNS&lt;/b&gt; — Route 53 (별도 계정) / Cloudflare&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;GCP Cloud DNS 사용 금지 (공격자가 장악 가능)&lt;/font&gt;&lt;br&gt;평시 → GCP · ⑥ 사고 시 → AWS" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#5F6368;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="840" y="740" width="280" height="90" as="geometry" />
+        <mxCell id="awsdns" value="AWS DNS 계정 (항상 존재, 별도 계정)" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=6;fontSize=14;fontStyle=1;arcSize=2;fillColor=#FFF6EB;strokeColor=#FF9900;fontColor=#B35C00;" vertex="1" parent="1">
+          <mxGeometry x="820" y="725" width="320" height="225" as="geometry" />
+        </mxCell>
+        <mxCell id="dnsnote" value="권한: 레코드 변경만 (사고 대응 담당자)&lt;br&gt;GCP 파이프라인에 DNS 쓰기 권한 없음&lt;br&gt;도메인 등록기관도 GCP 밖 · MFA · registrar lock&lt;br&gt;헬스체크 자동 failover 미사용 (침해된 GCP도 '정상' 응답)" style="text;html=1;whiteSpace=wrap;fontSize=10;fontColor=#555555;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="840" y="850" width="290" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="dns" value="&lt;b&gt;Route 53 호스팅 영역&lt;/b&gt;&lt;br&gt;평시 → GCP · ⑥ 사고 시 → AWS&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;승인 후 수동 전환 · TTL 60초&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#5F6368;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="840" y="770" width="280" height="70" as="geometry" />
         </mxCell>
         <mxCell id="post" value="&lt;b&gt;⑦ 사후 조치&lt;/b&gt;&lt;br&gt;GCP 재구축 여부 결정&lt;br&gt;SBOM · 의존성 고정 · 빌드 서명 의무화" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFFFFF;strokeColor=#5F6368;" vertex="1" parent="1">
           <mxGeometry x="840" y="1000" width="280" height="75" as="geometry" />
@@ -169,8 +175,8 @@
         <mxCell id="verify" value="&lt;b&gt;⑥ 전환 · 검증&lt;/b&gt;&lt;br&gt;무결성 · 이상 통신 확인&lt;br&gt;&lt;b&gt;RTO / RPO 측정&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#E6F4EA;strokeColor=#34A853;" vertex="1" parent="1">
           <mxGeometry x="1690" y="1045" width="260" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="legend" value="&lt;b&gt;범례&lt;/b&gt;  ━━ 평시 흐름   ╍╍ 사고 시 흐름   &lt;font color=&quot;#D93025&quot;&gt;╍╍ 공격 경로&lt;/font&gt;&lt;br&gt;파랑 GCP · 주황 AWS · 초록 검증/클린 빌드 · 보라 승인/오케스트레이션 · 빨강 침해/격리/미채택&lt;br&gt;①~⑦ = CLAUDE.md 발표 스토리 순서" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FAFAFA;strokeColor=#BDBDBD;align=left;spacingLeft=10;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="1180" y="1170" width="800" height="70" as="geometry" />
+        <mxCell id="legend" value="&lt;b&gt;범례&lt;/b&gt;  ━━ 평시 흐름   ╍╍ 사고 시 흐름   &lt;font color=&quot;#D93025&quot;&gt;╍╍ 공격 경로&lt;/font&gt;&lt;br&gt;파랑 GCP · 주황 AWS · 초록 검증/클린 빌드 · 보라 승인/오케스트레이션 · 빨강 침해/격리/미채택&lt;br&gt;AWS Organizations: 백업 · DNS · DR 3개 계정 분리 · 관리 계정엔 워크로드 없음 (SCP로 백업 삭제 · Object Lock 변경 차단)&lt;br&gt;①~⑦ = CLAUDE.md 발표 스토리 순서" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FAFAFA;strokeColor=#BDBDBD;align=left;spacingLeft=10;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="1165" width="800" height="85" as="geometry" />
         </mxCell>
         <mxCell id="e1" value="소스" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;strokeColor=#333333;" edge="1" parent="1" source="github" target="cloudbuild">
           <mxGeometry relative="1" as="geometry" />

@@ -49,10 +49,10 @@ CLAUDE.md에서 "가벼운 사내 서비스, 웹 프론트 + API 서버"로 합�
 | SCC (Security Command Center) | Event Threat Detection으로 SA 키 생성과 권한 상승 같은 행위를 탐지한다. 다만 공격자가 조직 권한으로 **SCC와 로깅을 끌 수 있으므로** 알림은 즉시 GCP 밖 채널로 보내고, 감사 로그 사본은 AWS가 pull해서 불변으로 보관한다 (포렌식용) |
 | CloudTrail, GuardDuty, CloudWatch | 백업 계정에서는 CloudTrail과 EventBridge로 삭제나 정책 변경 시도를 알린다. DR 계정에서는 GuardDuty와 VPC Flow Logs로 복구 후 이상 통신과 재감염 여부를 검증한다 |
 | ALB + WAF / Cloud Armor + LB | 진입 계층을 완성도 차원에서 추가했다 |
-| Route 53 트래픽 전환 | **DNS는 GCP 밖**(Route 53 별도 계정 또는 Cloudflare)에 둔다. Cloud DNS를 쓰면 공격자가 DNS까지 장악할 수 있기 때문이다 |
+| Route 53 트래픽 전환 | **DNS 전용 AWS 계정**의 Route 53에 둔다. Cloud DNS를 쓰면 공격자가 DNS까지 장악할 수 있다. 참고안의 "헬스체크 기반 자동 전환"은 쓰지 않는다. 침해된 GCP도 정상으로 응답하므로 관리자 승인 후 수동으로 전환한다 |
 
 ## v2에서 새로 추가한 것 (두 안 모두에 없던 것)
 
-- **AWS 계정을 백업용과 DR용으로 분리**: DR을 구축하다 자격증명이 노출돼도 백업 원본을 지울 수 없다
+- **AWS 계정을 백업, DNS, DR 3개로 분리**: DR을 구축하다 자격증명이 노출돼도 백업 원본과 DNS는 영향을 받지 않는다. DNS는 평시에도 동작해야 하므로, 평시에 없는 DR 계정에는 둘 수 없다
 - **ECR 태그 불변, 배포 시 cosign 서명 검증, AWS KMS 신규 서명 키**: 클린 파이프라인이 내보낸 이미지만 실행되도록 막는다
 - **감사 로그 사본을 AWS 쪽에 불변 보관**: 공격자가 GCP 로그를 지워도 포렌식 자료가 남는다

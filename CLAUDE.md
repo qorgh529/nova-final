@@ -42,6 +42,19 @@
 6. **전환·검증**: DNS 전환(Route 53 또는 Cloudflare), 데이터 무결성과 이상 통신 여부 확인, **RTO/RPO 측정**
 7. **사후 조치**: GCP 재구축 여부 결정, 재발 방지책(SBOM, 의존성 고정, 빌드 서명 의무화)
 
+## 추가 확정 사항 (아키텍처 검토, 2026-10-08)
+
+> 상세 근거: `docs/architecture/README.md`, `docs/architecture/comparison.md`
+
+- **AWS 계정은 3개로 분리**한다 (AWS Organizations, 관리 계정에는 워크로드 없음)
+  - 백업 계정: S3 Object Lock 불변 저장. 항상 존재
+  - DNS 계정: Route 53. 항상 존재하며 레코드 변경 권한만 둠
+  - DR 계정: 평시에는 없고 사고 시 Terraform으로 생성
+- **DNS는 DNS 전용 AWS 계정의 Route 53**에 둔다. GCP Cloud DNS와 Cloudflare는 쓰지 않는다
+  - 도메인 등록기관도 GCP 밖에 두고 MFA와 registrar lock을 건다
+  - 자동 failover는 쓰지 않고 관리자 승인 후 수동으로 전환한다. TTL은 60초로 유지한다
+- 이미지를 GCP에서 ECR로 **사전 복제하지 않는다** (사고 시 클린 빌드)
+
 ## 작업 단위(에픽)
 
 | 에픽 | 스토리 |
@@ -80,4 +93,5 @@
 - [ ] 컨플루언스 스페이스 생성 및 정리 (김성현)
 - [x] 아키텍처 다이어그램 작성 (GCP 운영 / AWS 격리 백업 / AWS 클린 DR) → `docs/architecture/`
 - [ ] 근거 사례 원문 확인
+- [ ] 도메인 확보 및 등록기관 확인 (GCP 밖, MFA·registrar lock)
 - [ ] 클라우드 서비스 선택 확정 (GKE와 Cloud Run 중 무엇을 쓸지, EKS와 ECS 중 무엇을 쓸지)
