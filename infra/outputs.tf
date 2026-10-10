@@ -39,3 +39,8 @@ output "vpn_tunnel_status_command" {
 output "route53_health_check_id" {
   value = var.enable_dns_failover ? module.dns[0].health_check_id : null
 }
+
+output "gke_ingress_ip" {
+  description = "GKE Ingress 고정 IP (overlays/gke Ingress가 사용)"
+  value       = module.gcp.ingress_ip
+}

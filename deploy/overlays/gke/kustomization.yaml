@@ -1,0 +1,33 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+labels:
+  - pairs:
+      payflow.io/cloud: gcp
+
+# CI가 태그를 갱신한다 (kustomize edit set image)
+images:
+  - name: payflow/auth
+    newName: asia-northeast3-docker.pkg.dev/GCP_PROJECT_ID/payflow/auth
+    newTag: 0.1.0
+  - name: payflow/payment
+    newName: asia-northeast3-docker.pkg.dev/GCP_PROJECT_ID/payflow/payment
+    newTag: 0.1.0
+  - name: payflow/order
+    newName: asia-northeast3-docker.pkg.dev/GCP_PROJECT_ID/payflow/order
+    newTag: 0.1.0
+
+configMapGenerator:
+  - name: payflow-config
+    namespace: payflow
+    literals:
+      - CLOUD=gcp
+      # primary: 읽기·쓰기 / readonly: 쓰기 차단 (Failover 시 fencing)
+      - APP_MODE=primary
+      # terraform output cloudsql_private_ip
+      - DB_HOST=CLOUDSQL_PRIVATE_IP
+      - DB_NAME=payflow
+
+patches:
+  - path: ingress.yaml

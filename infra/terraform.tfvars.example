@@ -10,6 +10,5 @@ gcp_project_id = "your-gcp-project-id"
 # enable_dns_failover  = true
 # route53_zone_id      = "Z0123456789ABCDEFGHIJ"
 # service_domain       = "api.payflow.example.com"
-# primary_ingress_ip   = "34.64.x.x"
 # standby_alb_dns_name = "k8s-xxxx.ap-northeast-2.elb.amazonaws.com"
 # standby_alb_zone_id  = "ZWKZPGTI48KDX"

@@ -79,7 +79,7 @@ CREATE SUBSCRIPTION payflow_sub
 
 ## DNS Failover 켜기 (D14 이후)
 
-GKE Ingress IP와 EKS ALB가 생긴 뒤 `terraform.tfvars`에서 `enable_dns_failover = true`와 엔드포인트 값을 채우고 다시 apply.
+GKE Ingress IP는 Terraform이 고정 IP(`gke_ingress_ip`)로 미리 만든다. EKS ALB가 생긴 뒤 `terraform.tfvars`에서 `enable_dns_failover = true`와 ALB 값(`standby_alb_dns_name`, `standby_alb_zone_id`)을 채우고 다시 apply.
 
 ## 비용 관리
 

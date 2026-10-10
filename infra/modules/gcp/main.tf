@@ -228,3 +228,9 @@ resource "google_sql_user" "admin" {
   instance = google_sql_database_instance.this.name
   password = random_password.admin.result
 }
+
+# ---------- Ingress 고정 IP (Route 53 Primary 레코드 대상) ----------
+
+resource "google_compute_global_address" "ingress" {
+  name = "${var.name}-ingress-ip"
+}

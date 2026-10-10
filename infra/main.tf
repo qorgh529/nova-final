@@ -55,7 +55,7 @@ module "dns" {
 
   zone_id              = var.route53_zone_id
   record_name          = var.service_domain
-  primary_ip           = var.primary_ingress_ip
+  primary_ip           = module.gcp.ingress_ip
   standby_alb_dns_name = var.standby_alb_dns_name
   standby_alb_zone_id  = var.standby_alb_zone_id
   health_check_path    = var.health_check_path

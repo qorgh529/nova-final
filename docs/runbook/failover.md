@@ -6,10 +6,10 @@
 |---|---|---|---|
 | 0 | 장애 감지 (Blackbox / Route 53 Health Check 실패, Slack 알림) | 자동 | |
 | 1 | 장애 판단: 일시적 오류인지 확인 | 당번 | |
-| 2 | **GCP 쓰기 차단 (fencing)** | 당번 | |
+| 2 | **GCP 쓰기 차단 (fencing)**: GKE에 닿으면 `overlays/gke`의 `APP_MODE=readonly` 커밋, 안 닿으면 GCP 방화벽으로 Ingress 차단 | 당번 | |
 | 3 | RDS 복제 지연 확인 → 최종 LSN 기록 (RPO 산출) | 당번 | |
 | 4 | RDS 승격 (복제 중단, 쓰기 가능 전환) | 당번 | |
-| 5 | EKS 앱 쓰기 모드 활성화, HPA 스케일 아웃 확인 | 자동/당번 | |
+| 5 | `overlays/eks`의 `APP_MODE=primary` 커밋 → ArgoCD(AWS) 동기화 → 파드 재시작, HPA 스케일 아웃 확인 | 당번/자동 | |
 | 6 | Route 53 절체 확인 (TTL 60초) | 자동 | |
 | 7 | 종단 간 결제 테스트, 데이터 정합성 검증 | 당번 | |
 

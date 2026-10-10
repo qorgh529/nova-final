@@ -18,3 +18,7 @@ output "admin_password" {
   value     = random_password.admin.result
   sensitive = true
 }
+
+output "ingress_ip" {
+  value = google_compute_global_address.ingress.address
+}

@@ -163,12 +163,6 @@ variable "service_domain" {
   default     = ""
 }
 
-variable "primary_ingress_ip" {
-  description = "GKE Ingress 외부 IP"
-  type        = string
-  default     = ""
-}
-
 variable "standby_alb_dns_name" {
   description = "EKS ALB DNS 이름"
   type        = string
