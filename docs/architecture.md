@@ -17,9 +17,10 @@
 ## 3. 네트워크
 
 - GCP HA VPN ↔ AWS Site-to-Site VPN (BGP), DB 복제 트래픽은 VPN 경유
-- CIDR 사전 할당 (겹치지 않게):
-  - GCP VPC: `10.10.0.0/16` (TBD)
-  - AWS VPC: `10.20.0.0/16` (TBD)
+- CIDR (겹치지 않게 할당, 상세는 `infra/README.md`):
+  - GCP: 노드 `10.10.0.0/20`, 파드 `10.11.0.0/16`, 서비스 `10.12.0.0/20`, Cloud SQL PSA `10.13.0.0/20`
+  - AWS VPC: `10.20.0.0/16`
+- Cloud SQL Private IP는 PSA 피어링 너머에 있으므로 Cloud Router가 PSA 대역을 AWS에 별도로 광고하고, 피어링에 custom route export를 켠다
 
 ## 4. 데이터 복제
 
@@ -63,4 +64,4 @@
 
 - [ ] DB 승격 자동화 수준 (완전 자동 vs 사람 승인)
 - [ ] Failback 방식 (역방향 복제 vs 재구성)
-- [ ] CIDR 최종 확정
+- [x] CIDR 확정 (`infra/README.md`)

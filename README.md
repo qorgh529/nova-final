@@ -56,10 +56,12 @@ flowchart TD
 
 ```
 .
-├── infra/                 # Terraform
-│   ├── gcp/               #   VPC, GKE, Cloud SQL, HA VPN
-│   ├── aws/               #   VPC, EKS, RDS, S2S VPN, Route 53
-│   └── modules/           #   공통 모듈
+├── infra/                 # Terraform (루트 1개로 양쪽 클라우드 + VPN 한 번에 apply)
+│   └── modules/
+│       ├── gcp/           #   VPC, GKE, Cloud SQL
+│       ├── aws/           #   VPC, EKS, RDS
+│       ├── vpn/           #   GCP HA VPN ↔ AWS VPN (터널 4개, BGP)
+│       └── dns/           #   Route 53 Health Check / Failover
 ├── apps/                  # 결제 MSA (auth / payment / order)
 ├── deploy/
 │   ├── base/              # 클라우드 공통 매니페스트 (Kustomize base)
@@ -73,7 +75,7 @@ flowchart TD
 │   ├── architecture.md    # 상세 설계
 │   ├── decisions/         # ADR (의사결정 기록)
 │   └── runbook/           # Failover / Failback 절차
-└── .github/workflows/     # CI (이미지 빌드 → Artifact Registry + ECR)
+└── .github/workflows/     # CI (Terraform 검증, 이미지 빌드 → Artifact Registry + ECR)
 ```
 
 ## 역할 분담
