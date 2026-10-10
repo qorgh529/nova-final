@@ -51,7 +51,7 @@ kubectl apply -k deploy/argocd/apps
 ```
 
 ### 사전 조건
-- **EKS에 AWS Load Balancer Controller 설치 필요** (ALB Ingress용, IAM 권한 포함). 아직 Terraform에 없음 → 다음 작업
+- EKS의 ALB Ingress는 AWS Load Balancer Controller가 처리한다. `infra/modules/eks-addons`가 `terraform apply` 때 함께 설치한다
 - 앱 이미지가 레지스트리에 올라가기 전까지 파드는 `ImagePullBackOff` 상태가 정상
 
 ## 운영 규칙

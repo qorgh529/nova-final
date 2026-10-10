@@ -34,6 +34,18 @@ module "aws" {
   deletion_protection = var.deletion_protection
 }
 
+module "eks_addons" {
+  source = "./modules/eks-addons"
+
+  name         = var.project_name
+  cluster_name = module.aws.eks_name
+  region       = var.aws_region
+  vpc_id       = module.aws.vpc_id
+
+  # 노드 그룹까지 다 뜬 뒤 설치 (컨트롤러 파드가 올라갈 노드가 필요)
+  depends_on = [module.aws]
+}
+
 module "vpn" {
   source = "./modules/vpn"
 

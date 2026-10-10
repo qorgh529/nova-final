@@ -17,3 +17,11 @@ output "rds_endpoint" {
 output "rds_master_secret_arn" {
   value = aws_db_instance.this.master_user_secret[0].secret_arn
 }
+
+output "eks_endpoint" {
+  value = module.eks.cluster_endpoint
+}
+
+output "eks_ca_data" {
+  value = module.eks.cluster_certificate_authority_data
+}

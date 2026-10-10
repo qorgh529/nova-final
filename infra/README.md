@@ -11,6 +11,7 @@ infra/
 └── modules/
     ├── gcp/   # VPC, NAT, GKE(프라이빗 노드), Cloud SQL(Private IP, logical_decoding=on)
     ├── aws/   # VPC, EKS(On-Demand 최소 노드), RDS(rds.logical_replication=1)
+    ├── eks-addons/  # AWS Load Balancer Controller (Helm + Pod Identity)
     ├── vpn/   # GCP HA VPN ↔ AWS VGW, 터널 4개 + BGP
     └── dns/   # Route 53 Health Check + Failover 레코드 (앱 배포 후 활성화)
 ```
@@ -80,6 +81,25 @@ CREATE SUBSCRIPTION payflow_sub
 ## DNS Failover 켜기 (D14 이후)
 
 GKE Ingress IP는 Terraform이 고정 IP(`gke_ingress_ip`)로 미리 만든다. EKS ALB가 생긴 뒤 `terraform.tfvars`에서 `enable_dns_failover = true`와 ALB 값(`standby_alb_dns_name`, `standby_alb_zone_id`)을 채우고 다시 apply.
+
+## AWS Load Balancer Controller
+
+`modules/eks-addons`가 EKS에 Helm 차트(v3.5.0)로 설치한다. EKS Ingress(`ingressClassName: alb`)를 실제 ALB로 만들어 주는 컨트롤러다.
+
+- 권한: 공식 IAM 정책(`iam-policy-lbc.json`, v3.5.0)을 EKS Pod Identity로 연결
+- Helm 설치는 로컬 `aws` CLI로 EKS 토큰을 받으므로 `apply`하는 PC에 aws CLI 필요
+- 차트 버전을 올리면 `iam-policy-lbc.json`도 같은 버전의 공식 파일로 교체
+- 확인: `kubectl -n kube-system get deploy aws-load-balancer-controller`
+
+### destroy 주의
+
+ALB는 컨트롤러가 만든 것이라 Terraform이 모른다. **Ingress를 먼저 지우지 않으면 ALB가 남아 VPC 삭제가 실패한다.**
+
+```bash
+kubectl delete ingress --all -n payflow   # ArgoCD 앱이 있으면 앱 먼저 삭제
+# ALB가 사라진 것 확인 후
+terraform destroy
+```
 
 ## 비용 관리
 
