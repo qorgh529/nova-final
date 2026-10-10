@@ -1,0 +1,11 @@
+# demo 프로파일: 대량 시드 + RPO 측정용 데이터 생성기 (운영 배포에서는 켜지 않는다)
+# 실행: SPRING_PROFILES_ACTIVE=demo
+nova:
+  demo:
+    seed:
+      users: ${NOVA_DEMO_SEED_USERS:20}
+      documents: ${NOVA_DEMO_SEED_DOCUMENTS:300}
+      eicar: ${NOVA_DEMO_SEED_EICAR:true}
+    generator:
+      enabled: ${NOVA_DEMO_GENERATOR_ENABLED:true}
+      interval: ${NOVA_DEMO_GENERATOR_INTERVAL:PT10S}

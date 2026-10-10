@@ -60,6 +60,8 @@ docs/
     architecture.drawio       아키텍처 다이어그램 v2 (app.diagrams.net에서 열기)
     comparison.md             v1 vs 참고안(9단계 이미지) 비교, 채택/미채택 이유
   app/README.md               앱 설계: 데이터 모델·API·데모 기능·백도어 안전 통제·E1 작업 목록
+scripts/db/
+  check-admin-accounts.sql    복원 전 관리자 계정 점검 (E1-10)
 app/
   README.md                   로컬 실행·curl 예시·빌드·테스트 방법
   docker-compose.yml          api · web · postgres · minio
@@ -83,7 +85,7 @@ app/
 | E1-8 `/version`, Actuator health | ✅ | |
 | E1-9 프론트엔드 | ✅ | 로그인·목록·작성·상세·승인/반려·첨부·관리(무결성 검증) |
 | 통합 테스트 (Testcontainers) | ✅ | `10e6a71`부터 CI 통과. 아래 참고 |
-| E1-10 데모 프로파일 | ❌ | 데이터 생성기, 대량 시드, 권한 점검 SQL, 체인 검증 CLI |
+| E1-10 데모 프로파일 | ✅ | 대량 시드·EICAR 첨부·데이터 생성기(`demo` 프로파일), 체인 검증 CLI(`verify-chain` 프로파일), `scripts/db/check-admin-accounts.sql`. 사용법은 `app/README.md` |
 | GCS 스토리지 드라이버 | ❌ | |
 
 ### 통합 테스트 현재 상태
@@ -139,19 +141,14 @@ app/
 
 ## 7. 다음에 할 일 (우선순위 순)
 
-1. **E1-10 데모 프로파일** (`demo` 프로파일에서만 켠다)
-   - 데이터 생성기 (`@Scheduled`로 결재 건 자동 생성·상신·승인 → RPO 측정)
-   - 시드 데이터: 사용자 20명, 문서 수백 건, EICAR 테스트 파일이 든 첨부 1건
-   - 권한 점검 SQL (`scripts/` 아래): 승인된 관리자 명단에 없거나 침해 시점 이후에 생긴 ADMIN 계정 탐지
-   - 체인 검증 CLI (복원 스크립트에서 호출)
-2. **GCS `StorageService` 드라이버** (`nova.storage.driver=gcs`, GCP 배포용)
-3. **백업 지원 코드**: 백업 직전에 `chain_checkpoints`에 체인 헤드 해시를 기록하는 로직 (현재 테이블만 있고 기록하는 코드가 없다)
-4. 다른 에픽(E2~E7)은 아직 시작하지 않았다
+1. **GCS `StorageService` 드라이버** (`nova.storage.driver=gcs`, GCP 배포용)
+2. **백업 지원 코드**: 백업 직전에 `chain_checkpoints`에 체인 헤드 해시를 기록하는 로직 (현재 테이블만 있고 기록하는 코드가 없다). 이 값이 불변 백업 매니페스트를 거쳐 체인 검증 CLI의 `--nova.cli.expected-head`로 들어간다
+3. 다른 에픽(E2~E7)은 아직 시작하지 않았다
    - E2 GCP 운영 환경(Terraform, Cloud Build, GKE), E3 격리 백업(Lambda), E4 침해 시뮬레이션, E5 격리 런북, E6 클린 DR(Terraform, 오케스트레이터), E7 발표
    - E6을 시작할 때 `archive/payflow-warm-standby`의 AWS 모듈을 출발점으로 쓸 수 있다 (6절)
-5. 테스트 보강: 반려 흐름 테스트 추가, 첨부 테스트에 다운로드 검증 추가(또는 이름 수정) (4절)
-6. CI 경고 정리: `setup-java@v5` 등 Node 24 기반 액션 버전으로 올리기 (5절)
-7. 저장소 밖 할 일(`CLAUDE.md` 남은 할 일): 채정훈님 자료 공유받기, 컨플루언스 정리, **근거 사례 원문 확인**(UniSuper, Code Spaces, SolarWinds, 3CX, tj-actions/changed-files), 도메인·등록기관 확보
+4. 테스트 보강: 반려 흐름 테스트 추가, 첨부 테스트에 다운로드 검증 추가(또는 이름 수정) (4절)
+5. CI 경고 정리: `setup-java@v5` 등 Node 24 기반 액션 버전으로 올리기 (5절)
+6. 저장소 밖 할 일(`CLAUDE.md` 남은 할 일): 채정훈님 자료 공유받기, 컨플루언스 정리, **근거 사례 원문 확인**(UniSuper, Code Spaces, SolarWinds, 3CX, tj-actions/changed-files), 도메인·등록기관 확보
 
 ---
 

@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface AttachmentRepository extends JpaRepository<Attachment, Long> {
     List<Attachment> findByDocumentId(Long documentId);
+
+    boolean existsByFileName(String fileName);
 }
