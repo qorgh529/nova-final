@@ -43,6 +43,66 @@ NOVA_JWT_SECRET=dev-only-insecure-secret-change-me-32bytes!! \
 
 운영에서는 `NOVA_SEED_DEV=false`로 끈다.
 
+## 데모 프로파일 (`demo`)
+
+발표·리허설용 기능이다. 운영 배포에서는 켜지 않는다.
+
+```bash
+SPRING_PROFILES_ACTIVE=demo ./gradlew bootRun     # 또는 컨테이너 환경변수로 지정
+```
+
+| 기능 | 동작 | 설정 (환경변수, 기본값) |
+|---|---|---|
+| 대량 시드 | 기동 후 사용자 `demo01`~`demo20`(5명마다 결재자, 비밀번호 `password`)과 문서를 만든다. 문서 상태는 기안 10%, 상신 대기 10%, 반려 10%, 일부 승인 10%, 최종 승인 60%. **모자란 만큼만** 채우므로 재기동해도 중복되지 않는다 | `NOVA_DEMO_SEED_USERS=20`, `NOVA_DEMO_SEED_DOCUMENTS=300` |
+| EICAR 첨부 | 무해한 표준 백신 테스트 파일(`eicar-test.txt`)을 첨부한 문서 1건. 복원 전 첨부 스캔(ClamAV)이 걸러내야 하는 대상이다. 스토리지가 안 되면 경고만 남기고, 다음 기동 때 같은 문서에 다시 시도한다 | `NOVA_DEMO_SEED_EICAR=true` |
+| 데이터 생성기 | 주기마다 `[GEN]` 결재 1건을 만들어 최종 승인까지 진행한다. **RPO = 사고 시각 − 복원된 DB의 마지막 `approval_history.acted_at`** | `NOVA_DEMO_GENERATOR_ENABLED=true`, `NOVA_DEMO_GENERATOR_INTERVAL=PT10S` |
+
+- EICAR 문자열은 소스에 **뒤집어서** 저장하고 실행 시점에만 복원한다. 원문이 소스·jar에 그대로 있으면 개발자 PC 백신과 클린 파이프라인의 이미지 스캔이 앱 자체를 악성으로 잡기 때문이다
+- 시드는 실제 API와 같은 `DocumentService`를 거치므로 해시 체인도 운영과 똑같이 쌓인다
+- 관리자(ADMIN) 계정은 만들지 않는다. 권한 점검의 기준선은 기본 계정 `admin` 하나다
+
+## 복원 검증 도구
+
+복원 스크립트(E6)가 복원한 DB를 대상으로 실행한다. 둘 다 결과를 **종료 코드**로 알려서 스크립트가 다음 단계로 갈지 판단할 수 있다.
+
+### 해시 체인 검증 CLI
+
+같은 api jar(이미지)를 `verify-chain` 프로파일로 실행한다. 웹 서버 없이 검증만 하고 끝나며, 마이그레이션과 기본 계정 시드를 꺼서 **대상 DB를 바꾸지 않는다**.
+
+```bash
+DB_URL=jdbc:postgresql://<복원 DB>:5432/nova DB_USER=... DB_PASSWORD=... \
+java -jar build/libs/nova-approval-api-0.1.0.jar --spring.profiles.active=verify-chain \
+  --nova.cli.expected-head=<불변 백업 매니페스트에 기록한 체인 헤드 해시>
+```
+
+출력 (JSON 한 줄):
+```json
+{"exitCode":0,"chain":{"valid":true,"count":657,"headHash":"b4f9...","brokenAtSeq":null,"reason":null},"expectedHead":"b4f9...","expectedHeadFound":true}
+```
+
+| 종료 코드 | 의미 |
+|---|---|
+| 0 | 체인 정상 (expected-head를 줬다면 체인 안에 있음) |
+| 10 | 체인 손상: 위변조된 첫 행이 `brokenAtSeq`, 사유가 `reason` |
+| 11 | 체인은 자체적으로 맞지만 expected-head가 체인에 없음 → 체인 전체가 다시 계산돼 바꿔치기됐을 수 있음 |
+| 1 | 기동 실패 (DB 접속 실패, 스키마 불일치 등) |
+
+- `expected-head`가 핵심이다. 공격자가 체인 전체를 다시 계산해 넣으면 자체 일관성은 맞출 수 있으므로, 체인 밖(불변 저장소)에 둔 헤드 해시로 고정해야 잡힌다
+- `/api/admin/integrity`와 같은 검증 로직(`ApprovalHistoryService.verify`)을 쓴다
+
+### 관리자 계정 점검 SQL
+
+[`../scripts/db/check-admin-accounts.sql`](../scripts/db/check-admin-accounts.sql): 승인 명단에 없거나 침해 시작 이후에 생긴 ADMIN 계정을 찾는다.
+
+```bash
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
+  -v approved_admins='admin' -v compromised_at='2026-10-20T09:00:00Z' \
+  -f scripts/db/check-admin-accounts.sql
+```
+
+- 의심 계정이 있거나 변수가 빠지면 종료 코드 3, 이상 없으면 0
+- 한계: `user_roles`에 권한 부여 시각이 없어서, 침해 이전부터 있던 계정에 나중에 ADMIN을 붙인 경우는 **명단 대조로만** 잡힌다
+
 ## 빠른 확인 (curl)
 
 ```bash
@@ -65,9 +125,9 @@ cd api
 ./gradlew bootJar       # 실행 가능한 jar
 ```
 
-- **통합 테스트**(`ApprovalE2EIntegrationTest`)는 Testcontainers로 Postgres와 MinIO를 띄워 결재 흐름을
-  end-to-end 검증한다: 로그인 → 작성 → 상신 → 단계별 승인 → 무결성 검증, 첨부 업로드·다운로드 왕복,
-  체인 위변조 탐지, 잘못된 결재자 403. **실행에는 Docker가 필요하다** (CI는 ubuntu-latest에서 동작).
+- **통합 테스트**는 Testcontainers로 Postgres를 띄운다 (스토리지는 인메모리 더블). **실행에는 Docker가 필요하다** (CI는 ubuntu-latest에서 동작)
+  - `ApprovalE2EIntegrationTest`: 로그인 → 작성 → 상신 → 단계별 승인 → 무결성 검증, 첨부 업로드, 체인 위변조 탐지, 잘못된 결재자 403
+  - `DemoProfileIntegrationTest`: demo 시드(상태 분포, EICAR 첨부), 데이터 생성기, 관리자 점검 SQL(컨테이너 안 psql로 실행), 체인 검증 CLI의 종료 코드
 
 - 의존성 잠금: `gradle.lockfile` (공급망 방어). 의존성을 바꾸면 `./gradlew dependencies --write-locks`로 갱신한다
 - SBOM: `./gradlew cyclonedxBom` → `build/reports/bom.json` (클린 파이프라인 Trivy 입력)
@@ -86,6 +146,6 @@ npm run build   # 타입체크 + dist 빌드
 
 ## 아직 안 된 것 (다음 작업)
 
-- E1-10 데모 프로파일 (데이터 생성기, 대량 시드, 권한 점검 SQL, 체인 검증 CLI)
 - GCS 스토리지 드라이버 (현재 S3/MinIO만. 인터페이스는 준비됨)
-- Testcontainers 통합 테스트 (결재 흐름 end-to-end)
+- 백업 직전 `chain_checkpoints`에 체인 헤드 해시를 기록하는 코드 (체인 검증 CLI의 `expected-head` 출처)
+- 테스트 보강: 반려 흐름, 첨부 다운로드

@@ -1,0 +1,19 @@
+# 체인 검증 CLI 모드 (복원 스크립트용). 웹 서버 없이 검증만 하고 종료 코드로 결과를 알린다.
+# 실행: java -jar api.jar --spring.profiles.active=verify-chain [--nova.cli.expected-head=<백업 매니페스트의 헤드 해시>]
+# 대상 DB를 바꾸지 않도록 마이그레이션과 기본 계정 시드를 끈다. 스키마가 다르면 기동 단계(ddl-auto=validate)에서 실패한다.
+spring:
+  main:
+    web-application-type: none
+    banner-mode: off
+  flyway:
+    enabled: false
+
+logging:
+  level:
+    root: warn
+
+nova:
+  seed:
+    dev: false
+  cli:
+    command: verify-chain

@@ -11,4 +11,6 @@ public interface ApprovalHistoryRepository extends JpaRepository<ApprovalHistory
     Optional<ApprovalHistory> findTopByOrderBySeqDesc();
 
     List<ApprovalHistory> findAllByOrderBySeqAsc();
+
+    boolean existsByHash(String hash);
 }
