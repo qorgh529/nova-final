@@ -1,6 +1,6 @@
 # 인수인계 문서 (다른 세션에서 이어서 작업하기)
 
-> 작성 시점: 2026-10-08. 저장소: `qorgh529/nova-final`, 작업 브랜치: `claude/new-session-bhc7ce`, PR: #1 (main으로)
+> 작성 시점: 2026-10-08, 갱신: 2026-10-10. 저장소: `qorgh529/nova-final`. PR #1은 main에 머지됨 (6절 참고)
 > 이 문서는 대화 기록 없이도 이어서 작업할 수 있도록 현재 상태와 결정 사항, 함정, 다음 할 일을 정리한 것이다.
 > **먼저 읽을 것**: 저장소 루트의 `CLAUDE.md` (팀 합의 사항·확정 결정. 자동 로드됨), 그다음 이 문서.
 
@@ -8,11 +8,10 @@
 
 ## 0. 새 세션 시작 체크리스트
 
-1. `git fetch origin claude/new-session-bhc7ce && git checkout claude/new-session-bhc7ce && git pull`
-2. 마지막 커밋이 `ac93de8` 이후인지 확인 (`git log --oneline -5`)
-3. **최신 커밋의 CI 결과부터 확인** (아래 4절 참고. 마지막 수정의 CI 결과는 아직 확인하지 못했다)
-4. `CLAUDE.md`의 "추가 확정 사항"은 **이미 합의된 결정**이다. 뒤집지 말고 보완하는 방향으로 진행한다
-5. PR 만들기·푸시 규칙: 사용자가 요청할 때만 PR을 만든다. 푸시는 지정 브랜치(`claude/new-session-bhc7ce`)에만 한다
+1. `git fetch origin main` 후 **main에서** 작업 브랜치를 만든다 (`claude/new-session-bhc7ce`는 PR #1로 머지가 끝난 브랜치다)
+2. 최신 main 커밋의 CI 결과를 확인한다 (현재 통합 테스트 포함 통과 상태. 4절 참고)
+3. `CLAUDE.md`의 "추가 확정 사항"은 **이미 합의된 결정**이다. 뒤집지 말고 보완하는 방향으로 진행한다
+4. PR 만들기·푸시 규칙: 사용자가 요청할 때만 PR을 만든다. 푸시는 세션에 지정된 브랜치에만 한다
 
 ---
 
@@ -83,20 +82,25 @@ app/
 | E1-7 첨부파일 + `StorageService`(S3/MinIO 드라이버) | ✅ | **GCS 드라이버는 아직 없음** |
 | E1-8 `/version`, Actuator health | ✅ | |
 | E1-9 프론트엔드 | ✅ | 로그인·목록·작성·상세·승인/반려·첨부·관리(무결성 검증) |
-| 통합 테스트 (Testcontainers) | ⚠️ **진행 중** | 아래 참고 |
+| 통합 테스트 (Testcontainers) | ✅ | `10e6a71`부터 CI 통과. 아래 참고 |
 | E1-10 데모 프로파일 | ❌ | 데이터 생성기, 대량 시드, 권한 점검 SQL, 체인 검증 CLI |
 | GCS 스토리지 드라이버 | ❌ | |
 
-### ⚠️ 통합 테스트 현재 상태 (가장 먼저 확인할 것)
-- `ApprovalE2EIntegrationTest`(결재 흐름, 잘못된 결재자 403, 첨부 업로드, 해시 체인 위변조 탐지)가 있다. **아직 한 번도 통과하지 못했다**
-- 실패 이력 (CI 로그는 `mcp__github__get_job_logs`로 job_id를 지정해 `return_content=true`, `tail_lines`를 200 이상으로 본다)
+### 통합 테스트 현재 상태
+- `ApprovalE2EIntegrationTest` 4개(휴가 결재 흐름 end-to-end, 잘못된 결재자 403, 첨부 업로드, 해시 체인 위변조 탐지)와 해시 단위 테스트 3개가 **CI에서 통과한다**
+  - 통과 기록: `10e6a71`(2026-10-08, run #10·#11), 같은 앱 코드로 2026-10-10 run #12에서도 재현
+  - 건너뛴 게 아니라 실제로 돈 근거: 테스트에 `@Disabled`나 Docker 없을 때 건너뛰는 설정이 없고(Docker가 없으면 Postgres 컨테이너 시작에서 실패하는 구조), Gradle이 실패·건너뜀을 출력하도록 설정돼 있는데 출력이 없으며, 로그에 Spring 앱의 DB 연결 풀이 열리고 닫힌 기록이 있다
+  - 테스트 리포트 아티팩트(`test-results`)는 이 환경에서 다운로드가 막혀(Azure blob 프록시 차단) 테스트별 결과 HTML은 직접 보지 못했다
+- 과거 실패 이력 (같은 종류 문제가 다시 나면 참고)
   1. `199ac1d`: MinIO Testcontainer 이미지 태그가 Docker Hub에 없어 pull 404 → MinIO를 없애고 인메모리 `StorageService` 더블(`TestStorageConfig`)로 대체
-  2. `ac93de8`: Postgres 컨테이너는 떴지만 **앱 컨텍스트 기동 중 Hibernate 스키마 검증(`ddl-auto=validate`) 실패**(`SchemaManagementException`). 통합 테스트가 처음으로 앱을 실제로 띄워서 잡아낸 버그다
-- 2번 수정(`V1__init.sql`의 `CHAR(64)` 4곳을 `VARCHAR(64)`로 변경, advisory lock 쿼리를 `CAST(... AS text)`로, 테스트 로깅 `exceptionFormat=FULL` 추가)은 푸시했지만 **그 CI 결과는 확인하지 못했다**
-  - 원인은 예외 클래스명만 보고 엔티티와 SQL을 대조해 추정한 것이다 (정확한 메시지는 못 봤다). 또 실패하면 이제 FULL 로깅으로 메시지가 보일 것이다
-  - V1 마이그레이션은 어디에도 배포된 적이 없어서 직접 수정했다. 배포된 뒤에는 V2로 고쳐야 한다
+  2. `ac93de8`: 앱 컨텍스트 기동 중 Hibernate 스키마 검증(`ddl-auto=validate`) 실패 → `V1__init.sql`의 `CHAR(64)` 4곳을 `VARCHAR(64)`로, advisory lock 쿼리를 `CAST(... AS text)`로 수정(`10e6a71`)
+  - V1 마이그레이션은 어디에도 배포된 적이 없어서 직접 수정했다. **배포된 뒤에는 V1을 고치지 말고 V2로 고친다**
+- CI 로그는 `mcp__github__get_job_logs`로 job_id를 지정해 `return_content=true`, `tail_lines`를 200 이상으로 본다
 - 테스트는 **로컬에서 실행할 수 없다**(이 환경에는 Docker 데몬이 없음). 컴파일 확인(`./gradlew compileTestJava`)만 가능하고 실행은 CI에서 한다
-- 통합 테스트가 통과하기 전까지 앱 컨텍스트 기동, 보안 설정, 결재 흐름은 실제로 검증된 적이 없다. 다음 실패 후보: `TestStorageConfig`와 스토리지 빈 충돌, JWT 인코더 설정, 첨부 업로드 multipart 처리
+- 통합 테스트가 다루지 않는 것 (코드로 확인함)
+  - **반려 흐름**: 반려(reject)를 호출하는 테스트가 없다
+  - **첨부 다운로드**: `attachmentUploadAndDownloadRoundTrip`은 이름과 달리 업로드, 스토리지 저장, 문서 상세의 sha256만 확인하고 다운로드(서명 URL)는 하지 않는다. 이름을 바꾸거나 다운로드 검증을 추가해야 한다
+  - S3/MinIO 실제 드라이버 (인메모리 더블 사용), 프론트엔드와의 실제 연동
 
 ---
 
@@ -109,37 +113,51 @@ app/
 - Docker Hub는 프록시 때문에 태그 존재 확인이 안 된다. 외부 이미지 태그를 고정할 때는 흔한 안정 태그(`postgres:16` 등)만 쓸 것
 - 의존성 변경 시 `./gradlew dependencies --write-locks`로 `gradle.lockfile`을 갱신한다. 웹은 `npm ci` 기준이라 `package-lock.json`을 항상 커밋한다
 - CI는 push와 pull_request 이벤트로 **두 번씩** 돈다(중복). 기능상 문제는 없고, 거슬리면 `push` 트리거를 지우면 된다
+- CI 경고(2026-10-10 기준, 아직 실패는 아님): `actions/setup-java@v4`는 지원 종료 예정이라 v5로 올려야 하고, Node 20 기반 액션(`checkout@v4`, `upload-artifact@v4`, `gradle/actions@v4`)은 Node 24로 강제 실행되고 있다
+- Terraform registry(`registry.terraform.io`), Helm 차트 저장소(`aws.github.io`), Actions 아티팩트 저장소(Azure blob)는 이 환경의 프록시가 막는다. GitHub(`github.com`, `raw.githubusercontent.com`)와 `releases.hashicorp.com`은 열려 있다
 
 ---
 
-## 6. 진행 중인 PR 운영
+## 6. PR 이력
 
-- PR: https://github.com/qorgh529/nova-final/pull/1 (head `claude/new-session-bhc7ce` → base `main`)
-- 원래 설계 문서용 PR이었지만 같은 브랜치라 구현 커밋도 함께 올라갔다. 설계와 구현을 분리하려면 구현 커밋을 별도 브랜치로 나눠야 한다 (사용자에게 아직 확인하지 못한 사항)
-- PR 활동 구독(`subscribe_pr_activity`)과 안전망 점검 예약(`send_later`)이 걸려 있다. **예약은 세션에 묶여 있어서 새 세션에는 이어지지 않을 수 있다.** 새 세션에서 필요하면 다시 구독할 것
+| PR | 내용 | 결과 |
+|---|---|---|
+| #1 | `CLAUDE.md`, 아키텍처 v2, 사내 서비스(E1) 설계·구현 | 2026-10-10 main에 머지 |
+| #2 | 다른 세션이 만든 "PayFlow" 결제 서비스 Warm Standby DR 설계 (문서, Terraform, Kustomize, ArgoCD) | #1 직후 머지됐으나 `CLAUDE.md` 합의와 충돌해 #4로 되돌림 |
+| #3 | #2 위에 AWS Load Balancer Controller 추가 | 머지하지 않고 닫음 |
+| #4 | #2 되돌리기 (main을 #1 머지 직후와 같은 상태로) | 머지 |
+
+- PayFlow 설계가 `CLAUDE.md`와 충돌한 지점: AWS 상시 대기(평시 0원 원칙 위반), GCP↔AWS VPN 상시 연결과 DB 실시간 복제(GCP 침해 시 침해 경로가 됨), Route 53 자동 failover(수동 전환 원칙 위반), ECR 사전 복제, AWS 단일 계정
+- PayFlow 작업물은 `archive/payflow-warm-standby` 브랜치에 보관했다. **E6(클린 DR)에서 재사용할 만한 부분**:
+  - Terraform AWS 모듈: VPC, EKS(On-Demand 노드 그룹, Pod Identity 애드온), RDS, AWS Load Balancer Controller(Helm + Pod Identity + 공식 IAM 정책)
+  - Kustomize base/overlay 구조 (서비스를 `web`/`api` 2개로 바꿔야 함)
+  - 런북·ADR 문서 형식
+  - **가져오면 안 되는 것**: GCP↔AWS VPN, Cloud SQL→RDS 복제, Route 53 자동 failover, AR+ECR 동시 푸시, ArgoCD 상시 동기화
 - 커밋 메시지 끝에는 시스템이 지정한 `Co-Authored-By`·`Claude-Session` 줄을 붙인다. PR 본문 끝에는 `🤖 Generated with [Claude Code](https://claude.com/claude-code)`와 세션 링크를 붙인다
 
 ---
 
 ## 7. 다음에 할 일 (우선순위 순)
 
-1. **`ac93de8`의 CI 확인** → 실패하면 원인 파악·수정. 통과하면 통합 테스트가 처음으로 검증된 것
-2. **E1-10 데모 프로파일** (`demo` 프로파일에서만 켠다)
+1. **E1-10 데모 프로파일** (`demo` 프로파일에서만 켠다)
    - 데이터 생성기 (`@Scheduled`로 결재 건 자동 생성·상신·승인 → RPO 측정)
    - 시드 데이터: 사용자 20명, 문서 수백 건, EICAR 테스트 파일이 든 첨부 1건
    - 권한 점검 SQL (`scripts/` 아래): 승인된 관리자 명단에 없거나 침해 시점 이후에 생긴 ADMIN 계정 탐지
    - 체인 검증 CLI (복원 스크립트에서 호출)
-3. **GCS `StorageService` 드라이버** (`nova.storage.driver=gcs`, GCP 배포용)
-4. **백업 지원 코드**: 백업 직전에 `chain_checkpoints`에 체인 헤드 해시를 기록하는 로직 (현재 테이블만 있고 기록하는 코드가 없다)
-5. 다른 에픽(E2~E7)은 아직 시작하지 않았다
+2. **GCS `StorageService` 드라이버** (`nova.storage.driver=gcs`, GCP 배포용)
+3. **백업 지원 코드**: 백업 직전에 `chain_checkpoints`에 체인 헤드 해시를 기록하는 로직 (현재 테이블만 있고 기록하는 코드가 없다)
+4. 다른 에픽(E2~E7)은 아직 시작하지 않았다
    - E2 GCP 운영 환경(Terraform, Cloud Build, GKE), E3 격리 백업(Lambda), E4 침해 시뮬레이션, E5 격리 런북, E6 클린 DR(Terraform, 오케스트레이터), E7 발표
-6. 저장소 밖 할 일(`CLAUDE.md` 남은 할 일): 채정훈님 자료 공유받기, 컨플루언스 정리, **근거 사례 원문 확인**(UniSuper, Code Spaces, SolarWinds, 3CX, tj-actions/changed-files), 도메인·등록기관 확보
+   - E6을 시작할 때 `archive/payflow-warm-standby`의 AWS 모듈을 출발점으로 쓸 수 있다 (6절)
+5. 테스트 보강: 반려 흐름 테스트 추가, 첨부 테스트에 다운로드 검증 추가(또는 이름 수정) (4절)
+6. CI 경고 정리: `setup-java@v5` 등 Node 24 기반 액션 버전으로 올리기 (5절)
+7. 저장소 밖 할 일(`CLAUDE.md` 남은 할 일): 채정훈님 자료 공유받기, 컨플루언스 정리, **근거 사례 원문 확인**(UniSuper, Code Spaces, SolarWinds, 3CX, tj-actions/changed-files), 도메인·등록기관 확보
 
 ---
 
 ## 8. 알려진 한계·주의 (솔직한 현황)
 
-- 컴파일과 **해시 체인 단위 테스트**만 확실히 통과했다. 결재 흐름·첨부·보안 설정은 통합 테스트가 통과하기 전까지 **동작이 검증되지 않았다**
+- API의 휴가 결재 승인 흐름·403 보안·첨부 업로드·해시 체인은 **통합 테스트로 검증됐다**(4절). 반려 흐름과 첨부 다운로드는 테스트가 없고, 스토리지는 인메모리 더블이라 S3/MinIO 실제 드라이버도 검증되지 않았다
 - 프론트엔드는 타입체크·빌드만 통과했고, 실제 API와 붙여 브라우저에서 동작시킨 적은 없다
 - 로컬 compose에서 첨부 다운로드(서명 URL이 `minio:9000`)는 브라우저에서 열리지 않는다 (`app/README.md`에 기록됨)
 - 로그인 토큰을 `localStorage`에 둔다(데모용). 운영이라면 httpOnly 쿠키 등을 검토해야 한다
