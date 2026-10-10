@@ -1,0 +1,80 @@
+# PR 테스트: 빌드 + 단위 테스트만 수행한다.
+# 설계 원칙(docs/architecture/README.md): GitHub Actions에는 어떤 클라우드 자격증명도 두지 않는다.
+# 평시 빌드·배포는 Cloud Build, 사고 시 클린 빌드는 AWS CodeBuild가 담당한다.
+name: PR Test
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "app/api/**"
+      - "app/web/**"
+      - ".github/workflows/pr-test.yml"
+  push:
+    branches-ignore: [main]
+    paths:
+      - "app/api/**"
+      - "app/web/**"
+      - ".github/workflows/pr-test.yml"
+
+permissions:
+  contents: read   # 클라우드 자격증명 없음, 저장소 읽기만
+
+concurrency:
+  group: pr-test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: api 빌드·단위테스트 (Java 21)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/api
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: 단위 테스트
+        run: ./gradlew --no-daemon test -x cyclonedxBom
+
+      - name: bootJar 빌드
+        run: ./gradlew --no-daemon bootJar -x cyclonedxBom
+
+      - name: 테스트 리포트 업로드
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: app/api/build/reports/tests/test
+          if-no-files-found: ignore
+
+  web:
+    name: web 타입체크·빌드 (Node 22)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/web
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: app/web/package-lock.json
+
+      - name: 의존성 설치 (lockfile 고정)
+        run: npm ci
+
+      - name: 타입체크·빌드
+        run: npm run build

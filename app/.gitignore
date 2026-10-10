@@ -1,0 +1,10 @@
+# Gradle
+api/.gradle/
+api/build/
+# Node (E1-9)
+web/node_modules/
+web/dist/
+# IDE
+.idea/
+*.iml
+.vscode/
