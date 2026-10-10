@@ -1,0 +1,9 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: payflow
+  namespace: payflow
+  annotations:
+    kubernetes.io/ingress.class: gce
+    # Terraform이 만든 고정 IP (Route 53 Primary 레코드와 동일)
+    kubernetes.io/ingress.global-static-ip-name: payflow-ingress-ip

@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: payflow
+  namespace: argocd
+spec:
+  description: PayFlow multi-cloud DR
+  sourceRepos:
+    - https://github.com/qorgh529/nova-final.git
+  destinations:
+    # GKE: argocd cluster add <gke-context> --name gke 로 등록
+    - name: gke
+      namespace: payflow
+    # EKS: ArgoCD가 설치된 클러스터 자신
+    - name: in-cluster
+      namespace: payflow
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
