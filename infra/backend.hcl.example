@@ -1,3 +1,0 @@
-# cp backend.hcl.example backend.hcl 후 값 수정 (backend.hcl은 커밋하지 않음)
-bucket = "payflow-tfstate-CHANGE-ME"
-prefix = "infra"
